@@ -1,0 +1,42 @@
+# dune build
+# OCAMLPARAM: unset
+# Shared cache: enabled-except-user-rules
+# Shared cache location: /Users/reina/.cache/dune/db
+# Workspace root: "/Users/reina/Desktop/Semestre
+# 5/Compilation/TPS/TP-lex-menhir/Impcat"
+# Auto-detected concurrency: 8
+# Dune context:
+#  { name = "default"
+#  ; kind = "default"
+#  ; profile = Dev
+#  ; merlin = true
+#  ; fdo_target_exe = None
+#  ; build_dir = In_build_dir "default"
+#  ; instrument_with = []
+#  }
+$ /Users/reina/.opam/default/bin/ocamlc.opt -config > /var/folders/bn/4m01t3d13sn2kcckjvxhxk8r0000gn/T/dune_84bc68_output
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamllex -q -o implexer.ml implexer.mll)
+$ (cd _build/default && /Users/reina/.opam/default/bin/menhir --explain --dump impparser.mly --base impparser --infer-write-query impparser__mock.ml.mock)
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamldep.opt -modules -impl impcat.ml) > _build/default/.impcat.eobjs/dune__exe__Impcat.impl.d
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamldep.opt -modules -impl impparser__mock.ml.mock) > _build/default/.impcat.eobjs/impparser__mock.impl.d
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamldep.opt -modules -impl imppp.ml) > _build/default/.impcat.eobjs/dune__exe__Imppp.impl.d
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamldep.opt -modules -impl implexer.ml) > _build/default/.impcat.eobjs/dune__exe__Implexer.impl.d
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamldep.opt -modules -impl imp.ml) > _build/default/.impcat.eobjs/dune__exe__Imp.impl.d
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -49 -nopervasives -nostdlib -g -bin-annot -bin-annot-occurrences -I .impcat.eobjs/byte -no-alias-deps -opaque -o .impcat.eobjs/byte/dune__exe.cmo -c -impl .impcat.eobjs/dune__exe.ml-gen)
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlc.opt -g -bin-annot -bin-annot-occurrences -I .impcat.eobjs/byte -no-alias-deps -opaque -open Dune__exe -o .impcat.eobjs/byte/dune__exe__Imp.cmo -c -impl imp.ml)
+$ (cd _build/.sandbox/9de76ece9c8f382d6e6a34c3be08f0a2/default && /Users/reina/.opam/default/bin/ocamlc.opt -g -I .impcat.eobjs/byte -open Dune__exe -short-paths -i -impl impparser__mock.ml.mock) > _build/.sandbox/9de76ece9c8f382d6e6a34c3be08f0a2/default/impparser__mock.mli.inferred
+$ (cd _build/default && /Users/reina/.opam/default/bin/menhir --explain --dump impparser.mly --base impparser --infer-read-reply impparser__mock.mli.inferred)
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamldep.opt -modules -intf impparser.mli) > _build/default/.impcat.eobjs/dune__exe__Impparser.intf.d
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamldep.opt -modules -impl impparser.ml) > _build/default/.impcat.eobjs/dune__exe__Impparser.impl.d
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlc.opt -g -bin-annot -bin-annot-occurrences -I .impcat.eobjs/byte -no-alias-deps -opaque -open Dune__exe -o .impcat.eobjs/byte/dune__exe__Impparser.cmi -c -intf impparser.mli)
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlc.opt -g -bin-annot -bin-annot-occurrences -I .impcat.eobjs/byte -no-alias-deps -opaque -open Dune__exe -o .impcat.eobjs/byte/dune__exe__Imppp.cmo -c -impl imppp.ml)
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlc.opt -g -bin-annot -bin-annot-occurrences -I .impcat.eobjs/byte -no-alias-deps -opaque -open Dune__exe -o .impcat.eobjs/byte/dune__exe__Implexer.cmo -c -impl implexer.ml)
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlc.opt -g -bin-annot -bin-annot-occurrences -I .impcat.eobjs/byte -no-alias-deps -opaque -open Dune__exe -o .impcat.eobjs/byte/dune__exe__Impcat.cmo -c -impl impcat.ml)
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -49 -nopervasives -nostdlib -g -I .impcat.eobjs/byte -I .impcat.eobjs/native -cmi-file .impcat.eobjs/byte/dune__exe.cmi -no-alias-deps -opaque -o .impcat.eobjs/native/dune__exe.cmx -c -impl .impcat.eobjs/dune__exe.ml-gen)
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlopt.opt -g -I .impcat.eobjs/byte -I .impcat.eobjs/native -cmi-file .impcat.eobjs/byte/dune__exe__Imp.cmi -no-alias-deps -opaque -open Dune__exe -o .impcat.eobjs/native/dune__exe__Imp.cmx -c -impl imp.ml)
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlopt.opt -g -I .impcat.eobjs/byte -I .impcat.eobjs/native -cmi-file .impcat.eobjs/byte/dune__exe__Impcat.cmi -no-alias-deps -opaque -open Dune__exe -o .impcat.eobjs/native/dune__exe__Impcat.cmx -c -impl impcat.ml)
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlopt.opt -g -I .impcat.eobjs/byte -I .impcat.eobjs/native -cmi-file .impcat.eobjs/byte/dune__exe__Implexer.cmi -no-alias-deps -opaque -open Dune__exe -o .impcat.eobjs/native/dune__exe__Implexer.cmx -c -impl implexer.ml)
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlopt.opt -g -I .impcat.eobjs/byte -I .impcat.eobjs/native -cmi-file .impcat.eobjs/byte/dune__exe__Imppp.cmi -no-alias-deps -opaque -open Dune__exe -o .impcat.eobjs/native/dune__exe__Imppp.cmx -c -impl imppp.ml)
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlopt.opt -g -I .impcat.eobjs/byte -I .impcat.eobjs/native -cmi-file .impcat.eobjs/byte/dune__exe__Impparser.cmi -no-alias-deps -opaque -open Dune__exe -o .impcat.eobjs/native/dune__exe__Impparser.cmx -c -impl impparser.ml)
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlopt.opt -g -o impcat.exe .impcat.eobjs/native/dune__exe.cmx .impcat.eobjs/native/dune__exe__Imp.cmx .impcat.eobjs/native/dune__exe__Impparser.cmx .impcat.eobjs/native/dune__exe__Implexer.cmx .impcat.eobjs/native/dune__exe__Imppp.cmx .impcat.eobjs/native/dune__exe__Impcat.cmx)
+# Promoting "_build/default/impcat.exe" to "impcat.exe"

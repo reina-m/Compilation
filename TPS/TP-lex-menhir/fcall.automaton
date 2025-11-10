@@ -1,0 +1,248 @@
+State 0:
+## Known stack suffix:
+##
+## LR(1) items:
+prog' -> . prog [ # ]
+## Transitions:
+-- On LPAR shift to state 1
+-- On ID shift to state 2
+-- On tuple shift to state 6
+-- On simple_expr shift to state 9
+-- On prog shift to state 18
+-- On expr shift to state 19
+## Reductions:
+
+State 1:
+## Known stack suffix:
+## LPAR
+## LR(1) items:
+simple_expr -> LPAR . expr RPAR [ RPAR LPAR ID EOF COMMA ]
+tuple -> LPAR . loption(separated_nonempty_list(COMMA,expr)) RPAR [ RPAR LPAR ID EOF COMMA ]
+## Transitions:
+-- On LPAR shift to state 1
+-- On ID shift to state 2
+-- On tuple shift to state 6
+-- On simple_expr shift to state 9
+-- On separated_nonempty_list(COMMA,expr) shift to state 10
+-- On loption(separated_nonempty_list(COMMA,expr)) shift to state 11
+-- On expr shift to state 13
+## Reductions:
+-- On RPAR
+--   reduce production loption(separated_nonempty_list(COMMA,expr)) ->
+
+State 2:
+## Known stack suffix:
+## ID
+## LR(1) items:
+expr -> ID . nonempty_list(simple_expr) [ RPAR EOF COMMA ]
+expr -> ID . tuple [ RPAR EOF COMMA ]
+simple_expr -> ID . [ RPAR EOF COMMA ]
+## Transitions:
+-- On LPAR shift to state 1
+-- On ID shift to state 3
+-- On tuple shift to state 4
+-- On simple_expr shift to state 5
+-- On nonempty_list(simple_expr) shift to state 8
+## Reductions:
+-- On RPAR EOF COMMA
+--   reduce production simple_expr -> ID
+
+State 3:
+## Known stack suffix:
+## ID
+## LR(1) items:
+simple_expr -> ID . [ RPAR LPAR ID EOF COMMA ]
+## Transitions:
+## Reductions:
+-- On RPAR LPAR ID EOF COMMA
+--   reduce production simple_expr -> ID
+
+State 4:
+## Known stack suffix:
+## ID tuple
+## LR(1) items:
+expr -> ID tuple . [ RPAR EOF COMMA ]
+simple_expr -> tuple . [ RPAR LPAR ID EOF COMMA ]
+## Transitions:
+## Reductions:
+-- On RPAR EOF COMMA
+--   reduce production expr -> ID tuple
+-- On RPAR LPAR ID EOF COMMA
+--   reduce production simple_expr -> tuple
+** Conflict on RPAR EOF COMMA
+
+State 5:
+## Known stack suffix:
+## simple_expr
+## LR(1) items:
+nonempty_list(simple_expr) -> simple_expr . [ RPAR EOF COMMA ]
+nonempty_list(simple_expr) -> simple_expr . nonempty_list(simple_expr) [ RPAR EOF COMMA ]
+## Transitions:
+-- On LPAR shift to state 1
+-- On ID shift to state 3
+-- On tuple shift to state 6
+-- On simple_expr shift to state 5
+-- On nonempty_list(simple_expr) shift to state 7
+## Reductions:
+-- On RPAR EOF COMMA
+--   reduce production nonempty_list(simple_expr) -> simple_expr
+
+State 6:
+## Known stack suffix:
+## tuple
+## LR(1) items:
+simple_expr -> tuple . [ RPAR LPAR ID EOF COMMA ]
+## Transitions:
+## Reductions:
+-- On RPAR LPAR ID EOF COMMA
+--   reduce production simple_expr -> tuple
+
+State 7:
+## Known stack suffix:
+## simple_expr nonempty_list(simple_expr)
+## LR(1) items:
+nonempty_list(simple_expr) -> simple_expr nonempty_list(simple_expr) . [ RPAR EOF COMMA ]
+## Transitions:
+## Reductions:
+-- On RPAR EOF COMMA
+--   reduce production nonempty_list(simple_expr) -> simple_expr nonempty_list(simple_expr)
+
+State 8:
+## Known stack suffix:
+## ID nonempty_list(simple_expr)
+## LR(1) items:
+expr -> ID nonempty_list(simple_expr) . [ RPAR EOF COMMA ]
+## Transitions:
+## Reductions:
+-- On RPAR EOF COMMA
+--   reduce production expr -> ID nonempty_list(simple_expr)
+
+State 9:
+## Known stack suffix:
+## simple_expr
+## LR(1) items:
+expr -> simple_expr . [ RPAR EOF COMMA ]
+## Transitions:
+## Reductions:
+-- On RPAR EOF COMMA
+--   reduce production expr -> simple_expr
+
+State 10:
+## Known stack suffix:
+## separated_nonempty_list(COMMA,expr)
+## LR(1) items:
+loption(separated_nonempty_list(COMMA,expr)) -> separated_nonempty_list(COMMA,expr) . [ RPAR ]
+## Transitions:
+## Reductions:
+-- On RPAR
+--   reduce production loption(separated_nonempty_list(COMMA,expr)) -> separated_nonempty_list(COMMA,expr)
+
+State 11:
+## Known stack suffix:
+## LPAR loption(separated_nonempty_list(COMMA,expr))
+## LR(1) items:
+tuple -> LPAR loption(separated_nonempty_list(COMMA,expr)) . RPAR [ RPAR LPAR ID EOF COMMA ]
+## Transitions:
+-- On RPAR shift to state 12
+## Reductions:
+
+State 12:
+## Known stack suffix:
+## LPAR loption(separated_nonempty_list(COMMA,expr)) RPAR
+## LR(1) items:
+tuple -> LPAR loption(separated_nonempty_list(COMMA,expr)) RPAR . [ RPAR LPAR ID EOF COMMA ]
+## Transitions:
+## Reductions:
+-- On RPAR LPAR ID EOF COMMA
+--   reduce production tuple -> LPAR loption(separated_nonempty_list(COMMA,expr)) RPAR
+
+State 13:
+## Known stack suffix:
+## LPAR expr
+## LR(1) items:
+separated_nonempty_list(COMMA,expr) -> expr . [ RPAR ]
+separated_nonempty_list(COMMA,expr) -> expr . COMMA separated_nonempty_list(COMMA,expr) [ RPAR ]
+simple_expr -> LPAR expr . RPAR [ RPAR LPAR ID EOF COMMA ]
+## Transitions:
+-- On RPAR shift to state 14
+-- On COMMA shift to state 15
+## Reductions:
+-- On RPAR
+--   reduce production separated_nonempty_list(COMMA,expr) -> expr
+** Conflict on RPAR
+
+State 14:
+## Known stack suffix:
+## LPAR expr RPAR
+## LR(1) items:
+simple_expr -> LPAR expr RPAR . [ RPAR LPAR ID EOF COMMA ]
+## Transitions:
+## Reductions:
+-- On RPAR LPAR ID EOF COMMA
+--   reduce production simple_expr -> LPAR expr RPAR
+
+State 15:
+## Known stack suffix:
+## expr COMMA
+## LR(1) items:
+separated_nonempty_list(COMMA,expr) -> expr COMMA . separated_nonempty_list(COMMA,expr) [ RPAR ]
+## Transitions:
+-- On LPAR shift to state 1
+-- On ID shift to state 2
+-- On tuple shift to state 6
+-- On simple_expr shift to state 9
+-- On separated_nonempty_list(COMMA,expr) shift to state 16
+-- On expr shift to state 17
+## Reductions:
+
+State 16:
+## Known stack suffix:
+## expr COMMA separated_nonempty_list(COMMA,expr)
+## LR(1) items:
+separated_nonempty_list(COMMA,expr) -> expr COMMA separated_nonempty_list(COMMA,expr) . [ RPAR ]
+## Transitions:
+## Reductions:
+-- On RPAR
+--   reduce production separated_nonempty_list(COMMA,expr) -> expr COMMA separated_nonempty_list(COMMA,expr)
+
+State 17:
+## Known stack suffix:
+## expr
+## LR(1) items:
+separated_nonempty_list(COMMA,expr) -> expr . [ RPAR ]
+separated_nonempty_list(COMMA,expr) -> expr . COMMA separated_nonempty_list(COMMA,expr) [ RPAR ]
+## Transitions:
+-- On COMMA shift to state 15
+## Reductions:
+-- On RPAR
+--   reduce production separated_nonempty_list(COMMA,expr) -> expr
+
+State 18:
+## Known stack suffix:
+## prog
+## LR(1) items:
+prog' -> prog . [ # ]
+## Transitions:
+## Reductions:
+-- On #
+--   accept prog
+
+State 19:
+## Known stack suffix:
+## expr
+## LR(1) items:
+prog -> expr . EOF [ # ]
+## Transitions:
+-- On EOF shift to state 20
+## Reductions:
+
+State 20:
+## Known stack suffix:
+## expr EOF
+## LR(1) items:
+prog -> expr EOF . [ # ]
+## Transitions:
+## Reductions:
+-- On #
+--   reduce production prog -> expr EOF
+

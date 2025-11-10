@@ -1,0 +1,57 @@
+
+** Conflict (shift/reduce) in state 8.
+** Token involved: SEMI
+** This state is reached from prog after reading:
+
+IF COND seq ELSE seq
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+prog 
+seq EOF 
+(?)
+
+** In state 8, looking ahead at SEMI, reducing production
+** expr -> IF COND seq ELSE seq
+** is permitted because of the following sub-derivation:
+
+seq SEMI expr // lookahead token appears
+expr // lookahead token is inherited
+IF COND seq ELSE seq . 
+
+** In state 8, looking ahead at SEMI, shifting is permitted
+** because of the following sub-derivation:
+
+expr 
+IF COND seq ELSE seq 
+                 seq . SEMI expr 
+
+** Conflict (shift/reduce) in state 4.
+** Tokens involved: SEMI ELSE
+** The following explanations concentrate on token SEMI.
+** This state is reached from prog after reading:
+
+IF COND seq
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+prog 
+seq EOF 
+(?)
+
+** In state 4, looking ahead at SEMI, reducing production
+** expr -> IF COND seq
+** is permitted because of the following sub-derivation:
+
+seq SEMI expr // lookahead token appears
+expr // lookahead token is inherited
+IF COND seq . 
+
+** In state 4, looking ahead at SEMI, shifting is permitted
+** because of the following sub-derivation:
+
+expr 
+IF COND seq 
+        seq . SEMI expr 

@@ -1,0 +1,56 @@
+
+** Conflict (shift/reduce) in state 13.
+** Token involved: RPAR
+** This state is reached from prog after reading:
+
+LPAR expr
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+prog 
+expr EOF 
+simple_expr 
+(?)
+
+** In state 13, looking ahead at RPAR, reducing production
+** separated_nonempty_list(COMMA,expr) -> expr
+** is permitted because of the following sub-derivation:
+
+tuple 
+LPAR loption(separated_nonempty_list(COMMA,expr)) RPAR // lookahead token appears
+     separated_nonempty_list(COMMA,expr) // lookahead token is inherited
+     expr . 
+
+** In state 13, looking ahead at RPAR, shifting is permitted
+** because of the following sub-derivation:
+
+LPAR expr . RPAR 
+
+** Conflict (reduce/reduce) in state 4.
+** Tokens involved: RPAR EOF COMMA
+** The following explanations concentrate on token EOF.
+** This state is reached from prog after reading:
+
+ID tuple
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+prog 
+expr EOF // lookahead token appears
+(?)
+
+** In state 4, looking ahead at EOF, reducing production
+** expr -> ID tuple
+** is permitted because of the following sub-derivation:
+
+ID tuple . 
+
+** In state 4, looking ahead at EOF, reducing production
+** simple_expr -> tuple
+** is permitted because of the following sub-derivation:
+
+ID nonempty_list(simple_expr) // lookahead token is inherited
+   simple_expr // lookahead token is inherited
+   tuple . 

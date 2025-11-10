@@ -1,0 +1,22 @@
+type token =
+    STAR
+  | SEMI
+  | RPAR
+  | PRINT
+  | PLUS
+  | LPAR
+  | INT of int
+  | IDENT of string
+  | FUNCTION
+  | EOF
+  | END
+  | BEGIN
+val menhir_begin_marker : int
+val xv_program : Imp.program
+val xv_list_instr_ : Imp.seq
+val xv_list_fun_def_ : Imp.function_def list
+val xv_instr : Imp.instr
+val xv_fun_def : Imp.function_def
+val xv_expr : Imp.expr
+val xv_binop : Imp.binop
+val menhir_end_marker : int

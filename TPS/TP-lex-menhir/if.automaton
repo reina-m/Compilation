@@ -1,0 +1,148 @@
+State 0:
+## Known stack suffix:
+##
+## LR(1) items:
+prog' -> . prog [ # ]
+## Transitions:
+-- On IF shift to state 1
+-- On ATOM shift to state 3
+-- On seq shift to state 10
+-- On prog shift to state 12
+-- On expr shift to state 9
+## Reductions:
+
+State 1:
+## Known stack suffix:
+## IF
+## LR(1) items:
+expr -> IF . COND seq [ SEMI EOF ELSE ]
+expr -> IF . COND seq ELSE seq [ SEMI EOF ELSE ]
+## Transitions:
+-- On COND shift to state 2
+## Reductions:
+
+State 2:
+## Known stack suffix:
+## IF COND
+## LR(1) items:
+expr -> IF COND . seq [ SEMI EOF ELSE ]
+expr -> IF COND . seq ELSE seq [ SEMI EOF ELSE ]
+## Transitions:
+-- On IF shift to state 1
+-- On ATOM shift to state 3
+-- On seq shift to state 4
+-- On expr shift to state 9
+## Reductions:
+
+State 3:
+## Known stack suffix:
+## ATOM
+## LR(1) items:
+expr -> ATOM . [ SEMI EOF ELSE ]
+## Transitions:
+## Reductions:
+-- On SEMI EOF ELSE
+--   reduce production expr -> ATOM
+
+State 4:
+## Known stack suffix:
+## IF COND seq
+## LR(1) items:
+expr -> IF COND seq . [ SEMI EOF ELSE ]
+expr -> IF COND seq . ELSE seq [ SEMI EOF ELSE ]
+seq -> seq . SEMI expr [ SEMI EOF ELSE ]
+## Transitions:
+-- On SEMI shift to state 5
+-- On ELSE shift to state 7
+## Reductions:
+-- On SEMI EOF ELSE
+--   reduce production expr -> IF COND seq
+** Conflict on SEMI ELSE
+
+State 5:
+## Known stack suffix:
+## seq SEMI
+## LR(1) items:
+seq -> seq SEMI . expr [ SEMI EOF ELSE ]
+## Transitions:
+-- On IF shift to state 1
+-- On ATOM shift to state 3
+-- On expr shift to state 6
+## Reductions:
+
+State 6:
+## Known stack suffix:
+## seq SEMI expr
+## LR(1) items:
+seq -> seq SEMI expr . [ SEMI EOF ELSE ]
+## Transitions:
+## Reductions:
+-- On SEMI EOF ELSE
+--   reduce production seq -> seq SEMI expr
+
+State 7:
+## Known stack suffix:
+## IF COND seq ELSE
+## LR(1) items:
+expr -> IF COND seq ELSE . seq [ SEMI EOF ELSE ]
+## Transitions:
+-- On IF shift to state 1
+-- On ATOM shift to state 3
+-- On seq shift to state 8
+-- On expr shift to state 9
+## Reductions:
+
+State 8:
+## Known stack suffix:
+## IF COND seq ELSE seq
+## LR(1) items:
+expr -> IF COND seq ELSE seq . [ SEMI EOF ELSE ]
+seq -> seq . SEMI expr [ SEMI EOF ELSE ]
+## Transitions:
+-- On SEMI shift to state 5
+## Reductions:
+-- On SEMI EOF ELSE
+--   reduce production expr -> IF COND seq ELSE seq
+** Conflict on SEMI
+
+State 9:
+## Known stack suffix:
+## expr
+## LR(1) items:
+seq -> expr . [ SEMI EOF ELSE ]
+## Transitions:
+## Reductions:
+-- On SEMI EOF ELSE
+--   reduce production seq -> expr
+
+State 10:
+## Known stack suffix:
+## seq
+## LR(1) items:
+prog -> seq . EOF [ # ]
+seq -> seq . SEMI expr [ SEMI EOF ]
+## Transitions:
+-- On SEMI shift to state 5
+-- On EOF shift to state 11
+## Reductions:
+
+State 11:
+## Known stack suffix:
+## seq EOF
+## LR(1) items:
+prog -> seq EOF . [ # ]
+## Transitions:
+## Reductions:
+-- On #
+--   reduce production prog -> seq EOF
+
+State 12:
+## Known stack suffix:
+## prog
+## LR(1) items:
+prog' -> prog . [ # ]
+## Transitions:
+## Reductions:
+-- On #
+--   accept prog
+

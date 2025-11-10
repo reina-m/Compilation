@@ -1,0 +1,6 @@
+function main() {
+  while (x < y) {
+    y = y-x;
+    z = z+1;
+  }
+}
