@@ -12,7 +12,7 @@
 %token <string> STRING
 %token PACKAGE IMPORT TYPE STRUCT FUNC VAR RETURN FOR IF ELSE
 %token TRUE FALSE NIL
-%token BOOL STRING1 MAIN INTTYPE
+%token BOOL STRING1 MAIN INT1
 %token LPAR RPAR BEGIN END SEMI COMMA DOT
 %token STAR PLUS MINUS DIV MOD
 %token EQ NEQ LT LE GT GE
@@ -20,7 +20,7 @@
 %token DEFINE ASSIGN INCR DECR
 %token EOF
 
-(* # voir les tables d'associativité dans le sujet *)
+(* voir les tables d'associativité dans le sujet *)
 %left OR
 %left AND
 %nonassoc EQ NEQ LT LE GT GE
@@ -36,13 +36,13 @@
 
 prog:
 | PACKAGE main=IDENT SEMI decls=list(decl) EOF
-    { if main = "main" then (false, decls) else raise Error }
+    { if main="main" then (false, decls) else raise Error}
 | PACKAGE main=IDENT SEMI IMPORT fmt=STRING SEMI decls=list(decl) EOF
-    { if main = "main" && fmt = "fmt" then (true, decls) else raise Error }
+    { if main="main" && fmt = "fmt" then (true, decls) else raise Error}
 ;
 
 ident:
-  id = IDENT { { loc = ($startpos, $endpos); id = id } }
+  id = IDENT { { loc = $startpos, $endpos; id = id } }
 ;
 
 decl:
@@ -50,6 +50,13 @@ decl:
   { Struct { sname = id; fields = List.flatten fl } }
 | FUNC fname=ident LPAR pl=params_opt RPAR ret=return_opt b=bloc SEMI
   { Fun { fname = fname; params = pl; return = ret; body = b } }
+;
+
+mgotype:
+  | INT1    { TInt }
+  | BOOL       { TBool }
+  | STRING1    { TString }
+  | STAR s=IDENT { TStruct(s) }
 ;
 
 fields:
@@ -79,19 +86,12 @@ return_opt:
     { let _ = trail in ts }
 ;
 
-mgotype:
-  | INTTYPE    { TInt }
-  | BOOL       { TBool }
-  | STRING1    { TString }
-  | STAR s=IDENT { TStruct(s) }
-;
-
 bloc:
 | BEGIN END { [] }
 ;
 
 expr:
-| e = expr_desc {  { eloc = ($startpos, $endpos); edesc = e } }
+| e = expr_desc {  { eloc = $startpos, $endpos; edesc = e } }
 ;
 
 expr_desc:
