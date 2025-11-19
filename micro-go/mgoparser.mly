@@ -12,7 +12,7 @@
 %token <string> STRING
 %token PACKAGE IMPORT TYPE STRUCT FUNC VAR RETURN FOR IF ELSE
 %token TRUE FALSE NIL
-%token BOOL STRING1 MAIN INT1
+%token BOOL STRING1 MAIN INT1 // (2.2)
 %token LPAR RPAR BEGIN END SEMI COMMA DOT
 %token STAR PLUS MINUS DIV MOD
 %token EQ NEQ LT LE GT GE
@@ -34,6 +34,7 @@
 
 %%
 
+// un fichier commence par package main, éventuellement suivi de l'import "fmt" (2.2)
 prog:
 | PACKAGE main=IDENT SEMI decls=list(decl) EOF
     { if main="main" then (false, decls) else raise Error}
@@ -41,13 +42,16 @@ prog:
     { if main="main" && fmt = "fmt" then (true, decls) else raise Error}
 ;
 
+// position dans le code source des identifiants
 ident:
   id = IDENT { { loc = $startpos, $endpos; id = id } }
 ;
 
-decl:
- TYPE id=ident STRUCT BEGIN fl=loption(fields) END SEMI
-  { Struct { sname = id; fields = List.flatten fl } }
+decl: // ⟨decl⟩ ::= ⟨structure⟩ | ⟨fonction⟩
+// ⟨structure⟩ ::= type ⟨ident⟩ struct { (⟨vars⟩;)⋆⟨vars⟩? } ;
+ TYPE id=ident STRUCT BEGIN fl=loption(fields) END SEMI // loption(X) = [X] | []
+  { Struct { sname = id; fields = List.flatten fl } } 
+// ⟨fonction⟩ ::= func ⟨ident⟩ ( (⟨vars⟩,)⋆⟨vars⟩? ) ⟨type_retour⟩? ⟨bloc⟩ ;
 | FUNC fname=ident LPAR pl=params_opt RPAR ret=return_opt b=bloc SEMI
   { Fun { fname = fname; params = pl; return = ret; body = b } }
 ;
@@ -59,14 +63,14 @@ mgotype:
   | STAR s=IDENT { TStruct(s) }
 ;
 
-fields:
+fields: // liste de groupes separés par des ;
 | xt=varstyp opt=option(SEMI)              { let _ = opt in [xt] }
 | xt=varstyp SEMI xtl = fields             { xt :: xtl }
-;
+; // (ident * mgotype) list list
 
-varstyp:
+varstyp: // ⟨vars⟩ ::= ⟨ident⟩+, ⟨type⟩ (groupe d'identifiants du même type e.g. quo int ou quo, rem int)
   |  ids=idents1 t=mgotype               { List.map (fun x -> (x, t)) ids }
-;
+; // (ident * mgotype) list
 
 idents1:
 | x=ident                     { [x] }
@@ -79,6 +83,7 @@ params_opt:
     { let _ = trail in List.flatten ps }
 ;
 
+// ⟨type_retour⟩ ::= ⟨type⟩ | ( ⟨type⟩+, ,? )
 return_opt:
 | /* empty */                               { [] }
 | t=mgotype                                 { [t] }
