@@ -1,0 +1,56 @@
+
+** Conflict (shift/reduce) in state 45.
+** Token involved: COMMA
+** This state is reached from prog after reading:
+
+PACKAGE IDENT SEMI FUNC ident LPAR params_opt RPAR LPAR mgotype
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+prog 
+PACKAGE IDENT SEMI list(decl) EOF 
+                   decl list(decl) 
+                   FUNC ident LPAR params_opt RPAR return_opt bloc SEMI 
+                                                   (?)
+
+** In state 45, looking ahead at COMMA, reducing production
+** separated_nonempty_list(COMMA,mgotype) -> mgotype
+** is permitted because of the following sub-derivation:
+
+LPAR separated_nonempty_list(COMMA,mgotype) option(COMMA) RPAR // lookahead token appears because option(COMMA) can begin with COMMA
+     mgotype . 
+
+** In state 45, looking ahead at COMMA, shifting is permitted
+** because of the following sub-derivation:
+
+LPAR separated_nonempty_list(COMMA,mgotype) option(COMMA) RPAR 
+     mgotype . COMMA separated_nonempty_list(COMMA,mgotype) 
+
+** Conflict (shift/reduce) in state 33.
+** Token involved: COMMA
+** This state is reached from prog after reading:
+
+PACKAGE IDENT SEMI FUNC ident LPAR varstyp
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+prog 
+PACKAGE IDENT SEMI list(decl) EOF 
+                   decl list(decl) 
+                   FUNC ident LPAR params_opt RPAR return_opt bloc SEMI 
+                                   (?)
+
+** In state 33, looking ahead at COMMA, reducing production
+** separated_nonempty_list(COMMA,varstyp) -> varstyp
+** is permitted because of the following sub-derivation:
+
+separated_nonempty_list(COMMA,varstyp) option(COMMA) // lookahead token appears because option(COMMA) can begin with COMMA
+varstyp . 
+
+** In state 33, looking ahead at COMMA, shifting is permitted
+** because of the following sub-derivation:
+
+separated_nonempty_list(COMMA,varstyp) option(COMMA) 
+varstyp . COMMA separated_nonempty_list(COMMA,varstyp) 

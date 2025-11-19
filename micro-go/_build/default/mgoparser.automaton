@@ -1,0 +1,665 @@
+State 0:
+## Known stack suffix:
+##
+## LR(1) items:
+prog' -> . prog [ # ]
+## Transitions:
+-- On PACKAGE shift to state 1
+-- On prog shift to state 60
+## Reductions:
+
+State 1:
+## Known stack suffix:
+## PACKAGE
+## LR(1) items:
+prog -> PACKAGE . IDENT SEMI list(decl) EOF [ # ]
+prog -> PACKAGE . IDENT SEMI IMPORT STRING SEMI list(decl) EOF [ # ]
+## Transitions:
+-- On IDENT shift to state 2
+## Reductions:
+
+State 2:
+## Known stack suffix:
+## PACKAGE IDENT
+## LR(1) items:
+prog -> PACKAGE IDENT . SEMI list(decl) EOF [ # ]
+prog -> PACKAGE IDENT . SEMI IMPORT STRING SEMI list(decl) EOF [ # ]
+## Transitions:
+-- On SEMI shift to state 3
+## Reductions:
+
+State 3:
+## Known stack suffix:
+## PACKAGE IDENT SEMI
+## LR(1) items:
+prog -> PACKAGE IDENT SEMI . list(decl) EOF [ # ]
+prog -> PACKAGE IDENT SEMI . IMPORT STRING SEMI list(decl) EOF [ # ]
+## Transitions:
+-- On TYPE shift to state 4
+-- On IMPORT shift to state 27
+-- On FUNC shift to state 30
+-- On list(decl) shift to state 58
+-- On decl shift to state 56
+## Reductions:
+-- On EOF
+--   reduce production list(decl) ->
+
+State 4:
+## Known stack suffix:
+## TYPE
+## LR(1) items:
+decl -> TYPE . ident STRUCT BEGIN loption(fields) END SEMI [ TYPE FUNC EOF ]
+## Transitions:
+-- On IDENT shift to state 5
+-- On ident shift to state 6
+## Reductions:
+
+State 5:
+## Known stack suffix:
+## IDENT
+## LR(1) items:
+ident -> IDENT . [ STRUCT STRING1 STAR LPAR INT1 COMMA BOOL ]
+## Transitions:
+## Reductions:
+-- On STRUCT STRING1 STAR LPAR INT1 COMMA BOOL
+--   reduce production ident -> IDENT
+
+State 6:
+## Known stack suffix:
+## TYPE ident
+## LR(1) items:
+decl -> TYPE ident . STRUCT BEGIN loption(fields) END SEMI [ TYPE FUNC EOF ]
+## Transitions:
+-- On STRUCT shift to state 7
+## Reductions:
+
+State 7:
+## Known stack suffix:
+## TYPE ident STRUCT
+## LR(1) items:
+decl -> TYPE ident STRUCT . BEGIN loption(fields) END SEMI [ TYPE FUNC EOF ]
+## Transitions:
+-- On BEGIN shift to state 8
+## Reductions:
+
+State 8:
+## Known stack suffix:
+## TYPE ident STRUCT BEGIN
+## LR(1) items:
+decl -> TYPE ident STRUCT BEGIN . loption(fields) END SEMI [ TYPE FUNC EOF ]
+## Transitions:
+-- On IDENT shift to state 5
+-- On varstyp shift to state 9
+-- On loption(fields) shift to state 23
+-- On idents1 shift to state 11
+-- On ident shift to state 18
+-- On fields shift to state 26
+## Reductions:
+-- On END
+--   reduce production loption(fields) ->
+
+State 9:
+## Known stack suffix:
+## varstyp
+## LR(1) items:
+fields -> varstyp . option(SEMI) [ END ]
+fields -> varstyp . SEMI fields [ END ]
+## Transitions:
+-- On SEMI shift to state 10
+-- On option(SEMI) shift to state 22
+## Reductions:
+-- On END
+--   reduce production option(SEMI) ->
+
+State 10:
+## Known stack suffix:
+## varstyp SEMI
+## LR(1) items:
+fields -> varstyp SEMI . fields [ END ]
+option(SEMI) -> SEMI . [ END ]
+## Transitions:
+-- On IDENT shift to state 5
+-- On varstyp shift to state 9
+-- On idents1 shift to state 11
+-- On ident shift to state 18
+-- On fields shift to state 21
+## Reductions:
+-- On END
+--   reduce production option(SEMI) -> SEMI
+
+State 11:
+## Known stack suffix:
+## idents1
+## LR(1) items:
+varstyp -> idents1 . mgotype [ SEMI RPAR END COMMA ]
+## Transitions:
+-- On STRING1 shift to state 12
+-- On STAR shift to state 13
+-- On INT1 shift to state 15
+-- On BOOL shift to state 16
+-- On mgotype shift to state 17
+## Reductions:
+
+State 12:
+## Known stack suffix:
+## STRING1
+## LR(1) items:
+mgotype -> STRING1 . [ SEMI RPAR END COMMA BEGIN ]
+## Transitions:
+## Reductions:
+-- On SEMI RPAR END COMMA BEGIN
+--   reduce production mgotype -> STRING1
+
+State 13:
+## Known stack suffix:
+## STAR
+## LR(1) items:
+mgotype -> STAR . IDENT [ SEMI RPAR END COMMA BEGIN ]
+## Transitions:
+-- On IDENT shift to state 14
+## Reductions:
+
+State 14:
+## Known stack suffix:
+## STAR IDENT
+## LR(1) items:
+mgotype -> STAR IDENT . [ SEMI RPAR END COMMA BEGIN ]
+## Transitions:
+## Reductions:
+-- On SEMI RPAR END COMMA BEGIN
+--   reduce production mgotype -> STAR IDENT
+
+State 15:
+## Known stack suffix:
+## INT1
+## LR(1) items:
+mgotype -> INT1 . [ SEMI RPAR END COMMA BEGIN ]
+## Transitions:
+## Reductions:
+-- On SEMI RPAR END COMMA BEGIN
+--   reduce production mgotype -> INT1
+
+State 16:
+## Known stack suffix:
+## BOOL
+## LR(1) items:
+mgotype -> BOOL . [ SEMI RPAR END COMMA BEGIN ]
+## Transitions:
+## Reductions:
+-- On SEMI RPAR END COMMA BEGIN
+--   reduce production mgotype -> BOOL
+
+State 17:
+## Known stack suffix:
+## idents1 mgotype
+## LR(1) items:
+varstyp -> idents1 mgotype . [ SEMI RPAR END COMMA ]
+## Transitions:
+## Reductions:
+-- On SEMI RPAR END COMMA
+--   reduce production varstyp -> idents1 mgotype
+
+State 18:
+## Known stack suffix:
+## ident
+## LR(1) items:
+idents1 -> ident . [ STRING1 STAR INT1 BOOL ]
+idents1 -> ident . COMMA idents1 [ STRING1 STAR INT1 BOOL ]
+## Transitions:
+-- On COMMA shift to state 19
+## Reductions:
+-- On STRING1 STAR INT1 BOOL
+--   reduce production idents1 -> ident
+
+State 19:
+## Known stack suffix:
+## ident COMMA
+## LR(1) items:
+idents1 -> ident COMMA . idents1 [ STRING1 STAR INT1 BOOL ]
+## Transitions:
+-- On IDENT shift to state 5
+-- On idents1 shift to state 20
+-- On ident shift to state 18
+## Reductions:
+
+State 20:
+## Known stack suffix:
+## ident COMMA idents1
+## LR(1) items:
+idents1 -> ident COMMA idents1 . [ STRING1 STAR INT1 BOOL ]
+## Transitions:
+## Reductions:
+-- On STRING1 STAR INT1 BOOL
+--   reduce production idents1 -> ident COMMA idents1
+
+State 21:
+## Known stack suffix:
+## varstyp SEMI fields
+## LR(1) items:
+fields -> varstyp SEMI fields . [ END ]
+## Transitions:
+## Reductions:
+-- On END
+--   reduce production fields -> varstyp SEMI fields
+
+State 22:
+## Known stack suffix:
+## varstyp option(SEMI)
+## LR(1) items:
+fields -> varstyp option(SEMI) . [ END ]
+## Transitions:
+## Reductions:
+-- On END
+--   reduce production fields -> varstyp option(SEMI)
+
+State 23:
+## Known stack suffix:
+## TYPE ident STRUCT BEGIN loption(fields)
+## LR(1) items:
+decl -> TYPE ident STRUCT BEGIN loption(fields) . END SEMI [ TYPE FUNC EOF ]
+## Transitions:
+-- On END shift to state 24
+## Reductions:
+
+State 24:
+## Known stack suffix:
+## TYPE ident STRUCT BEGIN loption(fields) END
+## LR(1) items:
+decl -> TYPE ident STRUCT BEGIN loption(fields) END . SEMI [ TYPE FUNC EOF ]
+## Transitions:
+-- On SEMI shift to state 25
+## Reductions:
+
+State 25:
+## Known stack suffix:
+## TYPE ident STRUCT BEGIN loption(fields) END SEMI
+## LR(1) items:
+decl -> TYPE ident STRUCT BEGIN loption(fields) END SEMI . [ TYPE FUNC EOF ]
+## Transitions:
+## Reductions:
+-- On TYPE FUNC EOF
+--   reduce production decl -> TYPE ident STRUCT BEGIN loption(fields) END SEMI
+
+State 26:
+## Known stack suffix:
+## fields
+## LR(1) items:
+loption(fields) -> fields . [ END ]
+## Transitions:
+## Reductions:
+-- On END
+--   reduce production loption(fields) -> fields
+
+State 27:
+## Known stack suffix:
+## PACKAGE IDENT SEMI IMPORT
+## LR(1) items:
+prog -> PACKAGE IDENT SEMI IMPORT . STRING SEMI list(decl) EOF [ # ]
+## Transitions:
+-- On STRING shift to state 28
+## Reductions:
+
+State 28:
+## Known stack suffix:
+## PACKAGE IDENT SEMI IMPORT STRING
+## LR(1) items:
+prog -> PACKAGE IDENT SEMI IMPORT STRING . SEMI list(decl) EOF [ # ]
+## Transitions:
+-- On SEMI shift to state 29
+## Reductions:
+
+State 29:
+## Known stack suffix:
+## PACKAGE IDENT SEMI IMPORT STRING SEMI
+## LR(1) items:
+prog -> PACKAGE IDENT SEMI IMPORT STRING SEMI . list(decl) EOF [ # ]
+## Transitions:
+-- On TYPE shift to state 4
+-- On FUNC shift to state 30
+-- On list(decl) shift to state 54
+-- On decl shift to state 56
+## Reductions:
+-- On EOF
+--   reduce production list(decl) ->
+
+State 30:
+## Known stack suffix:
+## FUNC
+## LR(1) items:
+decl -> FUNC . ident LPAR params_opt RPAR return_opt bloc SEMI [ TYPE FUNC EOF ]
+## Transitions:
+-- On IDENT shift to state 5
+-- On ident shift to state 31
+## Reductions:
+
+State 31:
+## Known stack suffix:
+## FUNC ident
+## LR(1) items:
+decl -> FUNC ident . LPAR params_opt RPAR return_opt bloc SEMI [ TYPE FUNC EOF ]
+## Transitions:
+-- On LPAR shift to state 32
+## Reductions:
+
+State 32:
+## Known stack suffix:
+## FUNC ident LPAR
+## LR(1) items:
+decl -> FUNC ident LPAR . params_opt RPAR return_opt bloc SEMI [ TYPE FUNC EOF ]
+## Transitions:
+-- On IDENT shift to state 5
+-- On varstyp shift to state 33
+-- On separated_nonempty_list(COMMA,varstyp) shift to state 36
+-- On params_opt shift to state 39
+-- On idents1 shift to state 11
+-- On ident shift to state 18
+## Reductions:
+-- On RPAR
+--   reduce production params_opt ->
+
+State 33:
+## Known stack suffix:
+## varstyp
+## LR(1) items:
+separated_nonempty_list(COMMA,varstyp) -> varstyp . [ RPAR COMMA ]
+separated_nonempty_list(COMMA,varstyp) -> varstyp . COMMA separated_nonempty_list(COMMA,varstyp) [ RPAR COMMA ]
+## Transitions:
+-- On COMMA shift to state 34
+## Reductions:
+-- On RPAR COMMA
+--   reduce production separated_nonempty_list(COMMA,varstyp) -> varstyp
+** Conflict on COMMA
+
+State 34:
+## Known stack suffix:
+## varstyp COMMA
+## LR(1) items:
+separated_nonempty_list(COMMA,varstyp) -> varstyp COMMA . separated_nonempty_list(COMMA,varstyp) [ RPAR COMMA ]
+## Transitions:
+-- On IDENT shift to state 5
+-- On varstyp shift to state 33
+-- On separated_nonempty_list(COMMA,varstyp) shift to state 35
+-- On idents1 shift to state 11
+-- On ident shift to state 18
+## Reductions:
+
+State 35:
+## Known stack suffix:
+## varstyp COMMA separated_nonempty_list(COMMA,varstyp)
+## LR(1) items:
+separated_nonempty_list(COMMA,varstyp) -> varstyp COMMA separated_nonempty_list(COMMA,varstyp) . [ RPAR COMMA ]
+## Transitions:
+## Reductions:
+-- On RPAR COMMA
+--   reduce production separated_nonempty_list(COMMA,varstyp) -> varstyp COMMA separated_nonempty_list(COMMA,varstyp)
+
+State 36:
+## Known stack suffix:
+## separated_nonempty_list(COMMA,varstyp)
+## LR(1) items:
+params_opt -> separated_nonempty_list(COMMA,varstyp) . option(COMMA) [ RPAR ]
+## Transitions:
+-- On COMMA shift to state 37
+-- On option(COMMA) shift to state 38
+## Reductions:
+-- On RPAR
+--   reduce production option(COMMA) ->
+
+State 37:
+## Known stack suffix:
+## COMMA
+## LR(1) items:
+option(COMMA) -> COMMA . [ RPAR ]
+## Transitions:
+## Reductions:
+-- On RPAR
+--   reduce production option(COMMA) -> COMMA
+
+State 38:
+## Known stack suffix:
+## separated_nonempty_list(COMMA,varstyp) option(COMMA)
+## LR(1) items:
+params_opt -> separated_nonempty_list(COMMA,varstyp) option(COMMA) . [ RPAR ]
+## Transitions:
+## Reductions:
+-- On RPAR
+--   reduce production params_opt -> separated_nonempty_list(COMMA,varstyp) option(COMMA)
+
+State 39:
+## Known stack suffix:
+## FUNC ident LPAR params_opt
+## LR(1) items:
+decl -> FUNC ident LPAR params_opt . RPAR return_opt bloc SEMI [ TYPE FUNC EOF ]
+## Transitions:
+-- On RPAR shift to state 40
+## Reductions:
+
+State 40:
+## Known stack suffix:
+## FUNC ident LPAR params_opt RPAR
+## LR(1) items:
+decl -> FUNC ident LPAR params_opt RPAR . return_opt bloc SEMI [ TYPE FUNC EOF ]
+## Transitions:
+-- On STRING1 shift to state 12
+-- On STAR shift to state 13
+-- On LPAR shift to state 41
+-- On INT1 shift to state 15
+-- On BOOL shift to state 16
+-- On return_opt shift to state 48
+-- On mgotype shift to state 53
+## Reductions:
+-- On BEGIN
+--   reduce production return_opt ->
+
+State 41:
+## Known stack suffix:
+## LPAR
+## LR(1) items:
+return_opt -> LPAR . separated_nonempty_list(COMMA,mgotype) option(COMMA) RPAR [ BEGIN ]
+## Transitions:
+-- On STRING1 shift to state 12
+-- On STAR shift to state 13
+-- On INT1 shift to state 15
+-- On BOOL shift to state 16
+-- On separated_nonempty_list(COMMA,mgotype) shift to state 42
+-- On mgotype shift to state 45
+## Reductions:
+
+State 42:
+## Known stack suffix:
+## LPAR separated_nonempty_list(COMMA,mgotype)
+## LR(1) items:
+return_opt -> LPAR separated_nonempty_list(COMMA,mgotype) . option(COMMA) RPAR [ BEGIN ]
+## Transitions:
+-- On COMMA shift to state 37
+-- On option(COMMA) shift to state 43
+## Reductions:
+-- On RPAR
+--   reduce production option(COMMA) ->
+
+State 43:
+## Known stack suffix:
+## LPAR separated_nonempty_list(COMMA,mgotype) option(COMMA)
+## LR(1) items:
+return_opt -> LPAR separated_nonempty_list(COMMA,mgotype) option(COMMA) . RPAR [ BEGIN ]
+## Transitions:
+-- On RPAR shift to state 44
+## Reductions:
+
+State 44:
+## Known stack suffix:
+## LPAR separated_nonempty_list(COMMA,mgotype) option(COMMA) RPAR
+## LR(1) items:
+return_opt -> LPAR separated_nonempty_list(COMMA,mgotype) option(COMMA) RPAR . [ BEGIN ]
+## Transitions:
+## Reductions:
+-- On BEGIN
+--   reduce production return_opt -> LPAR separated_nonempty_list(COMMA,mgotype) option(COMMA) RPAR
+
+State 45:
+## Known stack suffix:
+## mgotype
+## LR(1) items:
+separated_nonempty_list(COMMA,mgotype) -> mgotype . [ RPAR COMMA ]
+separated_nonempty_list(COMMA,mgotype) -> mgotype . COMMA separated_nonempty_list(COMMA,mgotype) [ RPAR COMMA ]
+## Transitions:
+-- On COMMA shift to state 46
+## Reductions:
+-- On RPAR COMMA
+--   reduce production separated_nonempty_list(COMMA,mgotype) -> mgotype
+** Conflict on COMMA
+
+State 46:
+## Known stack suffix:
+## mgotype COMMA
+## LR(1) items:
+separated_nonempty_list(COMMA,mgotype) -> mgotype COMMA . separated_nonempty_list(COMMA,mgotype) [ RPAR COMMA ]
+## Transitions:
+-- On STRING1 shift to state 12
+-- On STAR shift to state 13
+-- On INT1 shift to state 15
+-- On BOOL shift to state 16
+-- On separated_nonempty_list(COMMA,mgotype) shift to state 47
+-- On mgotype shift to state 45
+## Reductions:
+
+State 47:
+## Known stack suffix:
+## mgotype COMMA separated_nonempty_list(COMMA,mgotype)
+## LR(1) items:
+separated_nonempty_list(COMMA,mgotype) -> mgotype COMMA separated_nonempty_list(COMMA,mgotype) . [ RPAR COMMA ]
+## Transitions:
+## Reductions:
+-- On RPAR COMMA
+--   reduce production separated_nonempty_list(COMMA,mgotype) -> mgotype COMMA separated_nonempty_list(COMMA,mgotype)
+
+State 48:
+## Known stack suffix:
+## FUNC ident LPAR params_opt RPAR return_opt
+## LR(1) items:
+decl -> FUNC ident LPAR params_opt RPAR return_opt . bloc SEMI [ TYPE FUNC EOF ]
+## Transitions:
+-- On BEGIN shift to state 49
+-- On bloc shift to state 51
+## Reductions:
+
+State 49:
+## Known stack suffix:
+## BEGIN
+## LR(1) items:
+bloc -> BEGIN . END [ SEMI ]
+## Transitions:
+-- On END shift to state 50
+## Reductions:
+
+State 50:
+## Known stack suffix:
+## BEGIN END
+## LR(1) items:
+bloc -> BEGIN END . [ SEMI ]
+## Transitions:
+## Reductions:
+-- On SEMI
+--   reduce production bloc -> BEGIN END
+
+State 51:
+## Known stack suffix:
+## FUNC ident LPAR params_opt RPAR return_opt bloc
+## LR(1) items:
+decl -> FUNC ident LPAR params_opt RPAR return_opt bloc . SEMI [ TYPE FUNC EOF ]
+## Transitions:
+-- On SEMI shift to state 52
+## Reductions:
+
+State 52:
+## Known stack suffix:
+## FUNC ident LPAR params_opt RPAR return_opt bloc SEMI
+## LR(1) items:
+decl -> FUNC ident LPAR params_opt RPAR return_opt bloc SEMI . [ TYPE FUNC EOF ]
+## Transitions:
+## Reductions:
+-- On TYPE FUNC EOF
+--   reduce production decl -> FUNC ident LPAR params_opt RPAR return_opt bloc SEMI
+
+State 53:
+## Known stack suffix:
+## mgotype
+## LR(1) items:
+return_opt -> mgotype . [ BEGIN ]
+## Transitions:
+## Reductions:
+-- On BEGIN
+--   reduce production return_opt -> mgotype
+
+State 54:
+## Known stack suffix:
+## PACKAGE IDENT SEMI IMPORT STRING SEMI list(decl)
+## LR(1) items:
+prog -> PACKAGE IDENT SEMI IMPORT STRING SEMI list(decl) . EOF [ # ]
+## Transitions:
+-- On EOF shift to state 55
+## Reductions:
+
+State 55:
+## Known stack suffix:
+## PACKAGE IDENT SEMI IMPORT STRING SEMI list(decl) EOF
+## LR(1) items:
+prog -> PACKAGE IDENT SEMI IMPORT STRING SEMI list(decl) EOF . [ # ]
+## Transitions:
+## Reductions:
+-- On #
+--   reduce production prog -> PACKAGE IDENT SEMI IMPORT STRING SEMI list(decl) EOF
+
+State 56:
+## Known stack suffix:
+## decl
+## LR(1) items:
+list(decl) -> decl . list(decl) [ EOF ]
+## Transitions:
+-- On TYPE shift to state 4
+-- On FUNC shift to state 30
+-- On list(decl) shift to state 57
+-- On decl shift to state 56
+## Reductions:
+-- On EOF
+--   reduce production list(decl) ->
+
+State 57:
+## Known stack suffix:
+## decl list(decl)
+## LR(1) items:
+list(decl) -> decl list(decl) . [ EOF ]
+## Transitions:
+## Reductions:
+-- On EOF
+--   reduce production list(decl) -> decl list(decl)
+
+State 58:
+## Known stack suffix:
+## PACKAGE IDENT SEMI list(decl)
+## LR(1) items:
+prog -> PACKAGE IDENT SEMI list(decl) . EOF [ # ]
+## Transitions:
+-- On EOF shift to state 59
+## Reductions:
+
+State 59:
+## Known stack suffix:
+## PACKAGE IDENT SEMI list(decl) EOF
+## LR(1) items:
+prog -> PACKAGE IDENT SEMI list(decl) EOF . [ # ]
+## Transitions:
+## Reductions:
+-- On #
+--   reduce production prog -> PACKAGE IDENT SEMI list(decl) EOF
+
+State 60:
+## Known stack suffix:
+## prog
+## LR(1) items:
+prog' -> prog . [ # ]
+## Transitions:
+## Reductions:
+-- On #
+--   accept prog
+

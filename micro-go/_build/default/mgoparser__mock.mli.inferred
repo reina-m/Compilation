@@ -1,0 +1,68 @@
+type token =
+    VAR
+  | TYPE
+  | TRUE
+  | STRUCT
+  | STRING1
+  | STRING of string
+  | STAR
+  | SEMI
+  | RPAR
+  | RETURN
+  | PLUS
+  | PACKAGE
+  | OR
+  | NOT
+  | NIL
+  | NEW
+  | NEQ
+  | MOD
+  | MINUS
+  | MAIN
+  | LT
+  | LPAR
+  | LE
+  | INT1
+  | INT of int64
+  | INCR
+  | IMPORT
+  | IF
+  | IDENT of string
+  | GT
+  | GE
+  | FUNC
+  | FOR
+  | FALSE
+  | EQ
+  | EOF
+  | END
+  | ELSE
+  | DOT
+  | DIV
+  | DEFINE
+  | DECR
+  | COMMA
+  | BOOL
+  | BEGIN
+  | ASSIGN
+  | AND
+exception Error
+val menhir_begin_marker : int
+val xv_varstyp : (Mgoast.ident * Mgoast.typ) list
+val xv_separated_nonempty_list_COMMA_varstyp_ :
+  (Mgoast.ident * Mgoast.typ) list list
+val xv_separated_nonempty_list_COMMA_mgotype_ : Mgoast.typ list
+val xv_return_opt : Mgoast.typ list
+val xv_prog : Mgoast.program
+val xv_params_opt : (Mgoast.ident * Mgoast.typ) list
+val xv_option_SEMI_ : unit option
+val xv_option_COMMA_ : unit option
+val xv_mgotype : Mgoast.typ
+val xv_loption_fields_ : (Mgoast.ident * Mgoast.typ) list list
+val xv_list_decl_ : Mgoast.decl list
+val xv_idents1 : Mgoast.ident list
+val xv_ident : Mgoast.ident
+val xv_fields : (Mgoast.ident * Mgoast.typ) list list
+val xv_decl : Mgoast.decl
+val xv_bloc : Mgoast.seq
+val menhir_end_marker : int
