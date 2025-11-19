@@ -18,9 +18,9 @@
       "for",        FOR;
       "if",         IF;
       "else",       ELSE;
-      "int",        INT;
+      "int",        INTTYPE;
       "bool",       BOOL;
-      "string",     STRING1; (* important tell reina*)
+      "string",     STRING1;
       "true",       TRUE;
       "false",      FALSE;
       "nil",        NIL;
