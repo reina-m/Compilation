@@ -51,7 +51,6 @@ let () =
 	eprintf "error: %s\n@." msg;
 	exit 1
     | e ->
+	report_loc (lexeme_start_p lb, lexeme_end_p lb);
 	eprintf "Anomaly: %s\n@." (Printexc.to_string e);
 	exit 2
-
-

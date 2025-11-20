@@ -5,6 +5,11 @@
 
   exception Error
 
+  (* fonctions utilitaires pour construire des nœuds de l'AST avec leur position *)
+  let mk_instr loc idesc = { idesc; iloc = loc }
+  let mk_var_expr id = { edesc = Var id; eloc = id.loc }
+  let mk_bool_expr loc b = { edesc = Bool b; eloc = loc }
+
 %}
 
 %token <int64> INT
@@ -12,7 +17,7 @@
 %token <string> STRING
 %token PACKAGE IMPORT TYPE STRUCT FUNC VAR RETURN FOR IF ELSE NEW
 %token TRUE FALSE NIL
-%token BOOL STRING1 MAIN INT1 // (2.2)
+%token BOOL STRING1 INT1 // (2.2)
 %token LPAR RPAR BEGIN END SEMI COMMA DOT
 %token STAR PLUS MINUS DIV MOD
 %token EQ NEQ LT LE GT GE
@@ -77,6 +82,21 @@ idents1:
 | x=ident COMMA xs=idents1    { x :: xs }
 ;
 
+var_type_opt:
+|                                 { None }
+| t=mgotype                      { Some t }
+;
+
+var_init_opt:
+|                                 { None }
+| ASSIGN rhs=expr_list1           { Some rhs }
+;
+
+instr_simple_opt:
+|                                 { None }
+| i=instr_simple                  { Some i }
+;
+
 params_opt:
 |                                           { [] }
 | ps=separated_nonempty_list(COMMA, varstyp) trail=option(COMMA)
@@ -91,18 +111,117 @@ return_opt:
     { let _ = trail in ts }
 ;
 
-bloc:
-| BEGIN END { [] }
+bloc: // ⟨bloc⟩ ::= begin (⟨instr⟩; )⋆ ⟨instr⟩? ;? end
+| BEGIN instrs=separated_list(SEMI, instr) trail=option(SEMI) END
+    { let _ = trail in instrs }
+;
+
+/* ⟨instr⟩ ::= ⟨instr_simple⟩
+            | ⟨bloc⟩
+            | ⟨instr_if⟩
+            | var ⟨ident⟩+, ⟨type⟩? (:= ⟨expr⟩+ )?
+            | return ⟨expr⟩* 
+            | for ⟨bloc⟩
+            | for ⟨expr⟩ ⟨bloc⟩
+            | for ⟨instr_simple⟩? ; ⟨expr⟩ ; ⟨instr_simple⟩? ⟨bloc⟩
+*/
+
+instr:
+| s=instr_simple                      { s }
+| b=bloc                              { mk_instr ($startpos, $endpos) (Block b) }
+| i=instr_if                          { i }
+| VAR ids=idents1 typ=var_type_opt init=var_init_opt
+    {
+      let loc = ($startpos, $endpos) in
+      let init_seq =
+        match init with
+        | None -> []
+        | Some rhs ->
+            let lhs = List.map mk_var_expr ids in
+            let assign = mk_instr loc (Set (lhs, rhs)) in
+            [assign]
+      in
+      mk_instr loc (Vars (ids, typ, init_seq))
+    }
+| RETURN es=expr_list_opt
+    { mk_instr ($startpos, $endpos) (Return es) }
+| FOR b=bloc
+    {
+      let loc = ($startpos, $endpos) in
+      mk_instr loc (For (mk_bool_expr loc true, b))
+    }
+| FOR cond=expr b=bloc
+    { mk_instr ($startpos, $endpos) (For (cond, b)) }
+| FOR init=instr_simple_opt SEMI cond=expr SEMI post=instr_simple_opt body=bloc
+    {
+      let loc = ($startpos, $endpos) in
+      let loop_body =
+        match post with
+        | None -> body
+        | Some p -> body @ [p]
+      in
+      let loop_instr = mk_instr loc (For (cond, loop_body)) in
+      let prefix =
+        match init with
+        | None -> []
+        | Some i -> [i]
+      in
+      mk_instr loc (Block (prefix @ [loop_instr]))
+    }
+;
+
+/* IF cond th
+IF cond th ELSE block
+IF cond th ELSE instr_if
+*/ 
+
+instr_if:
+| IF cond=expr th=bloc
+    { mk_instr ($startpos, $endpos) (If (cond, th, [])) }
+| IF cond=expr th=bloc ELSE el=bloc
+    { mk_instr ($startpos, $endpos) (If (cond, th, el)) }
+| IF cond=expr th=bloc ELSE alt=instr_if
+    { mk_instr ($startpos, $endpos) (If (cond, th, [alt])) }
+;
+
+/*⟨instr_simple⟩ ::= ⟨expr⟩
+                 | ⟨expr⟩ (++ | --)
+                 | ⟨expr⟩+ = ⟨expr⟩+
+                 | ident+ := expr+
+*/
+
+instr_simple:
+| e=expr
+    { mk_instr ($startpos, $endpos) (Expr e) }
+| e=expr INCR
+    { mk_instr ($startpos, $endpos) (Inc e) }
+| e=expr DECR
+    { mk_instr ($startpos, $endpos) (Dec e) }
+| lhs=expr_list1 ASSIGN rhs=expr_list1
+    { mk_instr ($startpos, $endpos) (Set (lhs, rhs)) }
+| ids=idents1 DEFINE rhs=expr_list1
+    {
+      let lhs = List.map mk_var_expr ids in
+      mk_instr ($startpos, $endpos) (Set (lhs, rhs))
+    }
+;
+
+expr_list1:
+| es=separated_nonempty_list(COMMA, expr) { es }
+;
+
+expr_list_opt:
+|                                           { [] }
+| es=expr_list1 trail=option(COMMA)         { let _ = trail in es }
 ;
 
 expr:
 | e = expr_desc {  { eloc = $startpos, $endpos; edesc = e } }
 ;
 
-args_opt: // ⟨expr⟩⋆
+args_opt:
 |            { [] }
-// exprs séparés par des , 
-| es=separated_nonempty_list(COMMA, expr) trail=option(COMMA) // autorise , avant )
+| es=expr_list1 trail=option(COMMA)
     { let _ = trail in es }
 ;
 
@@ -127,10 +246,12 @@ expr_desc:
 | e=expr DOT field=ident      { Dot(e, field) }
 | fn=ident LPAR args=args_opt RPAR
     { Call(fn, args) } // appel classique
-| pkg=ident DOT meth=ident LPAR args=args_opt RPAR
-    { if pkg.id = "fmt" && meth.id = "Print"
-      then Print(args)
-      else raise Error }
+| target=expr DOT meth=ident LPAR args=args_opt RPAR
+    {
+      match target.edesc with
+      | Var pkg when pkg.id = "fmt" && meth.id = "Print" -> Print(args)
+      | _ -> raise Error
+    }
 | MINUS e=expr %prec UMINUS   { Unop(Opp, e) }
 | NOT e=expr %prec UNOT       { Unop(Not, e) }
 | e1=expr PLUS e2=expr        { Binop(Add, e1, e2) }

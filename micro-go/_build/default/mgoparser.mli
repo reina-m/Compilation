@@ -21,7 +21,6 @@ type token =
   | NEQ
   | MOD
   | MINUS
-  | MAIN
   | LT
   | LPAR
   | LE

@@ -13,68 +13,18 @@
 #  ; build_dir = In_build_dir "default"
 #  ; instrument_with = []
 #  }
-$ /Users/reina/.opam/default/bin/ocamlc.opt -config > /var/folders/bn/4m01t3d13sn2kcckjvxhxk8r0000gn/T/dune_2d7f3d_output
+$ /Users/reina/.opam/default/bin/ocamlc.opt -config > /var/folders/bn/4m01t3d13sn2kcckjvxhxk8r0000gn/T/dune_3faaf2_output
 $ (cd _build/default && /Users/reina/.opam/default/bin/menhir --explain --dump mgoparser.mly --base mgoparser --infer-write-query mgoparser__mock.ml.mock)
-> File "mgoparser.mly", line 20, characters 14-20:
-> Warning: the token ASSIGN is unused.
-> File "mgoparser.mly", line 20, characters 26-30:
-> Warning: the token DECR is unused.
-> File "mgoparser.mly", line 20, characters 7-13:
-> Warning: the token DEFINE is unused.
-> File "mgoparser.mly", line 13, characters 57-61:
-> Warning: the token ELSE is unused.
-> File "mgoparser.mly", line 13, characters 50-53:
-> Warning: the token FOR is unused.
-> File "mgoparser.mly", line 13, characters 54-56:
-> Warning: the token IF is unused.
-> File "mgoparser.mly", line 20, characters 21-25:
-> Warning: the token INCR is unused.
-> File "mgoparser.mly", line 15, characters 20-24:
-> Warning: the token MAIN is unused.
-> File "mgoparser.mly", line 13, characters 43-49:
-> Warning: the token RETURN is unused.
-> File "mgoparser.mly", line 13, characters 39-42:
-> Warning: the token VAR is unused.
-> File "mgoparser.mly", line 102, characters 0-8:
-> Warning: symbol args_opt is unreachable from any of the start symbol(s).
-> File "mgoparser.mly", line 98, characters 0-4:
-> Warning: symbol expr is unreachable from any of the start symbol(s).
-> File "mgoparser.mly", line 118, characters 0-9:
-> Warning: symbol expr_desc is unreachable from any of the start symbol(s).
-> File "<standard.mly>", line 248, characters 8-31:
-> Warning: symbol separated_nonempty_list(COMMA,expr) is unreachable from any of the start symbol(s).
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamldep.opt -modules -impl mgoparser__mock.ml.mock) > _build/default/.mgoc.eobjs/mgoparser__mock.impl.d
+$ (cd _build/.sandbox/a2b6b2a7a26440560499f0a53364cece/default && /Users/reina/.opam/default/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -warn-error -A -g -I .mgoc.eobjs/byte -open Dune__exe -short-paths -i -impl mgoparser__mock.ml.mock) > _build/.sandbox/a2b6b2a7a26440560499f0a53364cece/default/mgoparser__mock.mli.inferred
+> File "mgoparser.mly", line 3, characters 2-13:
+> Warning 33 [unused-open]: unused open Stdlib.Lexing.
 $ (cd _build/default && /Users/reina/.opam/default/bin/menhir --explain --dump mgoparser.mly --base mgoparser --infer-read-reply mgoparser__mock.mli.inferred)
-> File "mgoparser.mly", line 25, characters 0-5:
-> Warning: the precedence level assigned to AND is never useful.
-> File "mgoparser.mly", line 28, characters 0-5:
-> Warning: the precedence level assigned to DIV is never useful.
-> File "mgoparser.mly", line 30, characters 0-5:
-> Warning: the precedence level assigned to DOT is never useful.
-> File "mgoparser.mly", line 26, characters 0-9:
-> Warning: the precedence level assigned to EQ is never useful.
-> File "mgoparser.mly", line 26, characters 0-9:
-> Warning: the precedence level assigned to GE is never useful.
-> File "mgoparser.mly", line 26, characters 0-9:
-> Warning: the precedence level assigned to GT is never useful.
-> File "mgoparser.mly", line 26, characters 0-9:
-> Warning: the precedence level assigned to LE is never useful.
-> File "mgoparser.mly", line 26, characters 0-9:
-> Warning: the precedence level assigned to LT is never useful.
-> File "mgoparser.mly", line 27, characters 0-5:
-> Warning: the precedence level assigned to MINUS is never useful.
-> File "mgoparser.mly", line 28, characters 0-5:
-> Warning: the precedence level assigned to MOD is never useful.
-> File "mgoparser.mly", line 26, characters 0-9:
-> Warning: the precedence level assigned to NEQ is never useful.
-> File "mgoparser.mly", line 24, characters 0-5:
-> Warning: the precedence level assigned to OR is never useful.
-> File "mgoparser.mly", line 27, characters 0-5:
-> Warning: the precedence level assigned to PLUS is never useful.
-> File "mgoparser.mly", line 28, characters 0-5:
-> Warning: the precedence level assigned to STAR is never useful.
-> File "mgoparser.mly", line 29, characters 0-6:
-> Warning: the precedence level assigned to UMINUS is never useful.
-> File "mgoparser.mly", line 29, characters 0-6:
-> Warning: the precedence level assigned to UNOT is never useful.
-> Warning: 2 states have shift/reduce conflicts.
-> Warning: 2 shift/reduce conflicts were arbitrarily resolved.
+> Warning: 5 states have shift/reduce conflicts.
+> Warning: 5 shift/reduce conflicts were arbitrarily resolved.
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamldep.opt -modules -impl mgoparser.ml) > _build/default/.mgoc.eobjs/dune__exe__Mgoparser.impl.d
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -warn-error -A -g -I .mgoc.eobjs/byte -I .mgoc.eobjs/native -cmi-file .mgoc.eobjs/byte/dune__exe__Mgoparser.cmi -no-alias-deps -opaque -open Dune__exe -o .mgoc.eobjs/native/dune__exe__Mgoparser.cmx -c -impl mgoparser.ml)
+> File "mgoparser.mly", line 3, characters 2-13:
+> Warning 33 [unused-open]: unused open Stdlib.Lexing.
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -warn-error -A -g -o mgoc.exe .mgoc.eobjs/native/dune__exe.cmx .mgoc.eobjs/native/dune__exe__Mgoast.cmx .mgoc.eobjs/native/dune__exe__Mgoparser.cmx .mgoc.eobjs/native/dune__exe__Mgolexer.cmx .mgoc.eobjs/native/dune__exe__Typechecker.cmx .mgoc.eobjs/native/dune__exe__Mgoc.cmx)
+# Promoting "_build/default/mgoc.exe" to "mgoc.exe"

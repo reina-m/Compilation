@@ -1,4 +1,103 @@
 
+** Conflict (shift/reduce) in state 153.
+** Token involved: SEMI
+** This state is reached from prog after reading:
+
+PACKAGE IDENT SEMI FUNC ident LPAR params_opt RPAR return_opt BEGIN instr
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+prog 
+PACKAGE IDENT SEMI list(decl) EOF 
+                   decl list(decl) 
+                   FUNC ident LPAR params_opt RPAR return_opt bloc SEMI 
+                                                              (?)
+
+** In state 153, looking ahead at SEMI, reducing production
+** separated_nonempty_list(SEMI,instr) -> instr
+** is permitted because of the following sub-derivation:
+
+BEGIN loption(separated_nonempty_list(SEMI,instr)) option(SEMI) END // lookahead token appears because option(SEMI) can begin with SEMI
+      separated_nonempty_list(SEMI,instr) // lookahead token is inherited
+      instr . 
+
+** In state 153, looking ahead at SEMI, shifting is permitted
+** because of the following sub-derivation:
+
+BEGIN loption(separated_nonempty_list(SEMI,instr)) option(SEMI) END 
+      separated_nonempty_list(SEMI,instr) 
+      instr . SEMI separated_nonempty_list(SEMI,instr) 
+
+** Conflict (shift/reduce) in state 136.
+** Token involved: COMMA
+** This state is reached from prog after reading:
+
+PACKAGE IDENT SEMI FUNC ident LPAR params_opt RPAR return_opt BEGIN ident
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+prog 
+PACKAGE IDENT SEMI list(decl) EOF 
+                   decl list(decl) 
+                   FUNC ident LPAR params_opt RPAR return_opt bloc SEMI 
+                                                              BEGIN loption(separated_nonempty_list(SEMI,instr)) option(SEMI) END 
+                                                                    separated_nonempty_list(SEMI,instr) 
+                                                                    instr 
+                                                                    instr_simple 
+                                                                    (?)
+
+** In state 136, looking ahead at COMMA, reducing production
+** expr_desc -> ident
+** is permitted because of the following sub-derivation:
+
+expr_list1 ASSIGN expr_list1 
+separated_nonempty_list(COMMA,expr) 
+expr COMMA separated_nonempty_list(COMMA,expr) // lookahead token appears
+expr_desc // lookahead token is inherited
+ident . 
+
+** In state 136, looking ahead at COMMA, shifting is permitted
+** because of the following sub-derivation:
+
+idents1 DEFINE expr_list1 
+ident . COMMA idents1 
+
+** Conflict (shift/reduce) in state 72.
+** Token involved: COMMA
+** This state is reached from prog after reading:
+
+PACKAGE IDENT SEMI FUNC ident LPAR params_opt RPAR return_opt BEGIN RETURN expr
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+prog 
+PACKAGE IDENT SEMI list(decl) EOF 
+                   decl list(decl) 
+                   FUNC ident LPAR params_opt RPAR return_opt bloc SEMI 
+                                                              BEGIN loption(separated_nonempty_list(SEMI,instr)) option(SEMI) END 
+                                                                    separated_nonempty_list(SEMI,instr) 
+                                                                    instr 
+                                                                    RETURN expr_list_opt 
+                                                                           (?)
+
+** In state 72, looking ahead at COMMA, reducing production
+** separated_nonempty_list(COMMA,expr) -> expr
+** is permitted because of the following sub-derivation:
+
+expr_list1 option(COMMA) // lookahead token appears because option(COMMA) can begin with COMMA
+separated_nonempty_list(COMMA,expr) // lookahead token is inherited
+expr . 
+
+** In state 72, looking ahead at COMMA, shifting is permitted
+** because of the following sub-derivation:
+
+expr_list1 option(COMMA) 
+separated_nonempty_list(COMMA,expr) 
+expr . COMMA separated_nonempty_list(COMMA,expr) 
+
 ** Conflict (shift/reduce) in state 45.
 ** Token involved: COMMA
 ** This state is reached from prog after reading:
