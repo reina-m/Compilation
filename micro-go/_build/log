@@ -1,4 +1,4 @@
-# dune build
+# dune exec ./mgoc.exe -- --parse-only tests/var.go
 # OCAMLPARAM: unset
 # Shared cache: enabled-except-user-rules
 # Shared cache location: /Users/reina/.cache/dune/db
@@ -13,18 +13,4 @@
 #  ; build_dir = In_build_dir "default"
 #  ; instrument_with = []
 #  }
-$ /Users/reina/.opam/default/bin/ocamlc.opt -config > /var/folders/bn/4m01t3d13sn2kcckjvxhxk8r0000gn/T/dune_3faaf2_output
-$ (cd _build/default && /Users/reina/.opam/default/bin/menhir --explain --dump mgoparser.mly --base mgoparser --infer-write-query mgoparser__mock.ml.mock)
-$ (cd _build/default && /Users/reina/.opam/default/bin/ocamldep.opt -modules -impl mgoparser__mock.ml.mock) > _build/default/.mgoc.eobjs/mgoparser__mock.impl.d
-$ (cd _build/.sandbox/a2b6b2a7a26440560499f0a53364cece/default && /Users/reina/.opam/default/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -warn-error -A -g -I .mgoc.eobjs/byte -open Dune__exe -short-paths -i -impl mgoparser__mock.ml.mock) > _build/.sandbox/a2b6b2a7a26440560499f0a53364cece/default/mgoparser__mock.mli.inferred
-> File "mgoparser.mly", line 3, characters 2-13:
-> Warning 33 [unused-open]: unused open Stdlib.Lexing.
-$ (cd _build/default && /Users/reina/.opam/default/bin/menhir --explain --dump mgoparser.mly --base mgoparser --infer-read-reply mgoparser__mock.mli.inferred)
-> Warning: 5 states have shift/reduce conflicts.
-> Warning: 5 shift/reduce conflicts were arbitrarily resolved.
-$ (cd _build/default && /Users/reina/.opam/default/bin/ocamldep.opt -modules -impl mgoparser.ml) > _build/default/.mgoc.eobjs/dune__exe__Mgoparser.impl.d
-$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -warn-error -A -g -I .mgoc.eobjs/byte -I .mgoc.eobjs/native -cmi-file .mgoc.eobjs/byte/dune__exe__Mgoparser.cmi -no-alias-deps -opaque -open Dune__exe -o .mgoc.eobjs/native/dune__exe__Mgoparser.cmx -c -impl mgoparser.ml)
-> File "mgoparser.mly", line 3, characters 2-13:
-> Warning 33 [unused-open]: unused open Stdlib.Lexing.
-$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -warn-error -A -g -o mgoc.exe .mgoc.eobjs/native/dune__exe.cmx .mgoc.eobjs/native/dune__exe__Mgoast.cmx .mgoc.eobjs/native/dune__exe__Mgoparser.cmx .mgoc.eobjs/native/dune__exe__Mgolexer.cmx .mgoc.eobjs/native/dune__exe__Typechecker.cmx .mgoc.eobjs/native/dune__exe__Mgoc.cmx)
-# Promoting "_build/default/mgoc.exe" to "mgoc.exe"
+$ /Users/reina/.opam/default/bin/ocamlc.opt -config > /var/folders/bn/4m01t3d13sn2kcckjvxhxk8r0000gn/T/dune_bb82a9_output

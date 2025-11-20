@@ -46,27 +46,24 @@ type token =
   | ASSIGN
   | AND
 exception Error
-val mk_instr : Mgoast.location -> Mgoast.instr_desc -> Mgoast.instr
-val mk_var_expr : Mgoast.ident -> Mgoast.expr
-val mk_bool_expr : Mgoast.location -> bool -> Mgoast.expr
+val mk_i : Mgoast.location -> Mgoast.instr_desc -> Mgoast.instr
+val mk_var : Mgoast.ident -> Mgoast.expr
+val mk_bool : Mgoast.location -> bool -> Mgoast.expr
+val only_vars : Mgoast.expr list -> Mgoast.ident list
 val menhir_begin_marker : int
 val xv_varstyp : (Mgoast.ident * Mgoast.typ) list
 val xv_var_type_opt : Mgoast.typ option
 val xv_var_init_opt : Mgoast.expr list option
-val xv_separated_nonempty_list_SEMI_instr_ : Mgoast.seq
-val xv_separated_nonempty_list_COMMA_varstyp_ :
-  (Mgoast.ident * Mgoast.typ) list list
-val xv_separated_nonempty_list_COMMA_mgotype_ : Mgoast.typ list
-val xv_separated_nonempty_list_COMMA_expr_ : Mgoast.expr list
-val xv_separated_list_SEMI_instr_ : Mgoast.seq
+val xv_seq_tail : Mgoast.seq
+val xv_seq : Mgoast.seq
 val xv_return_opt : Mgoast.typ list
+val xv_ret_type_tail : Mgoast.typ list
+val xv_ret_type_list : Mgoast.typ list
 val xv_prog : Mgoast.program
 val xv_params_opt : (Mgoast.ident * Mgoast.typ) list
-val xv_option_SEMI_ : unit option
-val xv_option_COMMA_ : unit option
+val xv_param_tail : (Mgoast.ident * Mgoast.typ) list
+val xv_param_list : (Mgoast.ident * Mgoast.typ) list
 val xv_mgotype : Mgoast.typ
-val xv_loption_separated_nonempty_list_SEMI_instr__ : Mgoast.seq
-val xv_loption_fields_ : (Mgoast.ident * Mgoast.typ) list list
 val xv_list_decl_ : Mgoast.decl list
 val xv_instr_simple_opt : Mgoast.instr option
 val xv_instr_simple : Mgoast.instr
@@ -74,7 +71,9 @@ val xv_instr_if : Mgoast.instr
 val xv_instr : Mgoast.instr
 val xv_idents1 : Mgoast.ident list
 val xv_ident : Mgoast.ident
-val xv_fields : (Mgoast.ident * Mgoast.typ) list list
+val xv_field_groups_tail : (Mgoast.ident * Mgoast.typ) list list
+val xv_field_groups : (Mgoast.ident * Mgoast.typ) list list
+val xv_expr_list_tail : Mgoast.expr list
 val xv_expr_list_opt : Mgoast.expr list
 val xv_expr_list1 : Mgoast.expr list
 val xv_expr_desc : Mgoast.expr_desc

@@ -6,9 +6,14 @@
   exception Error
 
   (* fonctions utilitaires pour construire des nœuds de l'AST avec leur position *)
-  let mk_instr loc idesc = { idesc; iloc = loc }
-  let mk_var_expr id = { edesc = Var id; eloc = id.loc }
-  let mk_bool_expr loc b = { edesc = Bool b; eloc = loc }
+  let mk_i loc idesc = { idesc; iloc = loc }
+  let mk_var id = { edesc = Var id; eloc = id.loc }
+  let mk_bool loc b = { edesc = Bool b; eloc = loc }
+  let only_vars el =
+    List.map (fun e ->
+        match e.edesc with
+        | Var id -> id
+        | _ -> raise Error) el
 
 %}
 
@@ -54,8 +59,8 @@ ident:
 
 decl: // ⟨decl⟩ ::= ⟨structure⟩ | ⟨fonction⟩
 // ⟨structure⟩ ::= type ⟨ident⟩ struct { (⟨vars⟩;)⋆⟨vars⟩? } ;
- TYPE id=ident STRUCT BEGIN fl=loption(fields) END SEMI // loption(X) = [X] | []
-  { Struct { sname = id; fields = List.flatten fl } } 
+ TYPE id=ident STRUCT BEGIN groups=field_groups END SEMI
+  { Struct { sname = id; fields = List.flatten groups } } 
 // ⟨fonction⟩ ::= func ⟨ident⟩ ( (⟨vars⟩,)⋆⟨vars⟩? ) ⟨type_retour⟩? ⟨bloc⟩ ;
 | FUNC fname=ident LPAR pl=params_opt RPAR ret=return_opt b=bloc SEMI
   { Fun { fname = fname; params = pl; return = ret; body = b } }
@@ -68,10 +73,15 @@ mgotype:
   | STAR s=IDENT { TStruct(s) }
 ;
 
-fields: // liste de groupes separés par des ;
-| xt=varstyp opt=option(SEMI)              { let _ = opt in [xt] }
-| xt=varstyp SEMI xtl = fields             { xt :: xtl }
+field_groups:
+|                                           { [] }
+| vs=varstyp rest=field_groups_tail         { vs :: rest }
 ; // (ident * mgotype) list list
+
+field_groups_tail:
+| SEMI rest=field_groups                    { rest }
+|                                           { [] }
+;
 
 varstyp: // ⟨vars⟩ ::= ⟨ident⟩+, ⟨type⟩ (groupe d'identifiants du même type e.g. quo int ou quo, rem int)
   |  ids=idents1 t=mgotype               { List.map (fun x -> (x, t)) ids }
@@ -99,21 +109,48 @@ instr_simple_opt:
 
 params_opt:
 |                                           { [] }
-| ps=separated_nonempty_list(COMMA, varstyp) trail=option(COMMA)
-    { let _ = trail in List.flatten ps }
+| lst=param_list                            { lst }
+;
+
+param_list:
+| vs=varstyp rest=param_tail                { vs @ rest }
+;
+
+param_tail:
+| COMMA rest=param_list                     { rest }
+| COMMA                                     { [] }
+|                                           { [] }
 ;
 
 // ⟨type_retour⟩ ::= ⟨type⟩ | ( ⟨type⟩+, ,? )
 return_opt:
 |                                           { [] }
 | t=mgotype                                 { [t] }
-| LPAR ts=separated_nonempty_list(COMMA, mgotype) trail=option(COMMA) RPAR
-    { let _ = trail in ts }
+| LPAR ts=ret_type_list RPAR                { ts }
+;
+
+ret_type_list:
+| t=mgotype rest=ret_type_tail              { t :: rest }
+;
+
+ret_type_tail:
+| COMMA rest=ret_type_list                  { rest }
+| COMMA                                     { [] }
+|                                           { [] }
 ;
 
 bloc: // ⟨bloc⟩ ::= begin (⟨instr⟩; )⋆ ⟨instr⟩? ;? end
-| BEGIN instrs=separated_list(SEMI, instr) trail=option(SEMI) END
-    { let _ = trail in instrs }
+| BEGIN instrs=seq END { instrs }
+;
+
+seq:
+|                                           { [] }
+| i=instr rest=seq_tail                     { i :: rest }
+;
+
+seq_tail:
+| SEMI rest=seq                             { rest }
+|                                           { [] }
 ;
 
 /* ⟨instr⟩ ::= ⟨instr_simple⟩
@@ -128,7 +165,7 @@ bloc: // ⟨bloc⟩ ::= begin (⟨instr⟩; )⋆ ⟨instr⟩? ;? end
 
 instr:
 | s=instr_simple                      { s }
-| b=bloc                              { mk_instr ($startpos, $endpos) (Block b) }
+| b=bloc                              { mk_i ($startpos, $endpos) (Block b) }
 | i=instr_if                          { i }
 | VAR ids=idents1 typ=var_type_opt init=var_init_opt
     {
@@ -137,21 +174,21 @@ instr:
         match init with
         | None -> []
         | Some rhs ->
-            let lhs = List.map mk_var_expr ids in
-            let assign = mk_instr loc (Set (lhs, rhs)) in
+            let lhs = List.map mk_var ids in
+            let assign = mk_i loc (Set (lhs, rhs)) in
             [assign]
       in
-      mk_instr loc (Vars (ids, typ, init_seq))
+      mk_i loc (Vars (ids, typ, init_seq))
     }
 | RETURN es=expr_list_opt
-    { mk_instr ($startpos, $endpos) (Return es) }
+    { mk_i ($startpos, $endpos) (Return es) }
 | FOR b=bloc
     {
       let loc = ($startpos, $endpos) in
-      mk_instr loc (For (mk_bool_expr loc true, b))
+      mk_i loc (For (mk_bool loc true, b))
     }
 | FOR cond=expr b=bloc
-    { mk_instr ($startpos, $endpos) (For (cond, b)) }
+    { mk_i ($startpos, $endpos) (For (cond, b)) }
 | FOR init=instr_simple_opt SEMI cond=expr SEMI post=instr_simple_opt body=bloc
     {
       let loc = ($startpos, $endpos) in
@@ -160,13 +197,13 @@ instr:
         | None -> body
         | Some p -> body @ [p]
       in
-      let loop_instr = mk_instr loc (For (cond, loop_body)) in
+      let loop_instr = mk_i loc (For (cond, loop_body)) in
       let prefix =
         match init with
         | None -> []
         | Some i -> [i]
       in
-      mk_instr loc (Block (prefix @ [loop_instr]))
+      mk_i loc (Block (prefix @ [loop_instr]))
     }
 ;
 
@@ -177,11 +214,11 @@ IF cond th ELSE instr_if
 
 instr_if:
 | IF cond=expr th=bloc
-    { mk_instr ($startpos, $endpos) (If (cond, th, [])) }
+    { mk_i ($startpos, $endpos) (If (cond, th, [])) }
 | IF cond=expr th=bloc ELSE el=bloc
-    { mk_instr ($startpos, $endpos) (If (cond, th, el)) }
+    { mk_i ($startpos, $endpos) (If (cond, th, el)) }
 | IF cond=expr th=bloc ELSE alt=instr_if
-    { mk_instr ($startpos, $endpos) (If (cond, th, [alt])) }
+    { mk_i ($startpos, $endpos) (If (cond, th, [alt])) }
 ;
 
 /*⟨instr_simple⟩ ::= ⟨expr⟩
@@ -192,37 +229,46 @@ instr_if:
 
 instr_simple:
 | e=expr
-    { mk_instr ($startpos, $endpos) (Expr e) }
+    { mk_i ($startpos, $endpos) (Expr e) }
 | e=expr INCR
-    { mk_instr ($startpos, $endpos) (Inc e) }
+    { mk_i ($startpos, $endpos) (Inc e) }
 | e=expr DECR
-    { mk_instr ($startpos, $endpos) (Dec e) }
+    { mk_i ($startpos, $endpos) (Dec e) }
 | lhs=expr_list1 ASSIGN rhs=expr_list1
-    { mk_instr ($startpos, $endpos) (Set (lhs, rhs)) }
-| ids=idents1 DEFINE rhs=expr_list1
+    { mk_i ($startpos, $endpos) (Set (lhs, rhs)) }
+| lhs=expr_list1 DEFINE rhs=expr_list1
     {
-      let lhs = List.map mk_var_expr ids in
-      mk_instr ($startpos, $endpos) (Set (lhs, rhs))
+      let ids = only_vars lhs in
+      let lhs_exprs = List.map mk_var ids in
+      mk_i ($startpos, $endpos) (Set (lhs_exprs, rhs))
     }
 ;
 
+// ⟨expr⟩+
 expr_list1:
-| es=separated_nonempty_list(COMMA, expr) { es }
+| e=expr rest=expr_list_tail               { e :: rest }
 ;
 
+// pour le retour de fonction
 expr_list_opt:
 |                                           { [] }
-| es=expr_list1 trail=option(COMMA)         { let _ = trail in es }
+| es=expr_list1                             { es }
+;
+
+expr_list_tail:
+| COMMA rest=expr_list1                     { rest }
+| COMMA                                     { [] }
+|                                           { [] }
 ;
 
 expr:
 | e = expr_desc {  { eloc = $startpos, $endpos; edesc = e } }
 ;
 
+// pour l'argument des fonctions
 args_opt:
 |            { [] }
-| es=expr_list1 trail=option(COMMA)
-    { let _ = trail in es }
+| es=expr_list1 { es }
 ;
 
 /* ⟨expr⟩ ::= ⟨entier⟩ | ⟨chaîne⟩ | true | false | nil
