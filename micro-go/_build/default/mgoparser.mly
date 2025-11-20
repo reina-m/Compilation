@@ -9,6 +9,9 @@
   let mk_i loc idesc = { idesc; iloc = loc }
   let mk_var id = { edesc = Var id; eloc = id.loc }
   let mk_bool loc b = { edesc = Bool b; eloc = loc }
+  (* on autorise x, y := f() mais pas (a[i]:= 3) par exemple 
+  ident+ := expr+
+  *)
   let only_vars el =
     List.map (fun e ->
         match e.edesc with
