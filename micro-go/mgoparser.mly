@@ -206,10 +206,12 @@ instr_simple:
     }
 ;
 
+// ⟨expr⟩+
 expr_list1:
 | es=separated_nonempty_list(COMMA, expr) { es }
 ;
 
+// pour le retour de fonction
 expr_list_opt:
 |                                           { [] }
 | es=expr_list1 trail=option(COMMA)         { let _ = trail in es }
@@ -219,6 +221,7 @@ expr:
 | e = expr_desc {  { eloc = $startpos, $endpos; edesc = e } }
 ;
 
+// pour l'argument des fonctions
 args_opt:
 |            { [] }
 | es=expr_list1 trail=option(COMMA)
