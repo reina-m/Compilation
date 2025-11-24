@@ -1,0 +1,102 @@
+open Imp
+open Mips
+
+let push reg =
+  subi sp sp 4
+  @@ sw reg 0 sp
+
+let pop  reg =
+  lw reg 0 sp
+  @@ addi sp sp 4
+
+let regs = [| t0; t1; t2; |]
+let nb_regs = Array.length regs
+
+let rec tr_expr = function
+  | Cst(n)  -> li t0 n
+  | Var(id) -> la t0 id @@ lw t0 0(t0)
+  | Bop(bop, e1, e2) ->
+    let op = match bop with
+      | Add -> add
+      | Mul -> mul
+      | Lt  -> slt
+      | And -> and_
+    in
+    tr_expr e2
+    @@ push t0
+    @@ tr_expr e1
+    @@ pop t1
+    @@ op t0 t0 t1      
+
+let new_label =
+  let cpt = ref (-1) in
+  fun () -> incr cpt; Printf.sprintf "_label_%i" !cpt
+
+let rec tr_seq = function
+  | []   -> nop
+  | [i]  -> tr_instr i
+  | i::s -> tr_instr i @@ tr_seq s
+
+and tr_instr = function
+  | Print(e) ->
+    tr_expr e
+    @@ move a0 t0
+    @@ li v0 11
+    @@ syscall
+
+  | Set(id, e) ->
+    tr_expr e
+    @@ la t1 id 
+    @@ sw t0 0 t1
+
+  | If(c, s1, s2) ->
+    let then_label = new_label()
+    and end_label = new_label()
+    in
+    tr_expr c
+    @@ bnez t0 then_label
+    @@ tr_seq s2
+    @@ b end_label
+    @@ label then_label
+    @@ tr_seq s1
+    @@ label end_label
+
+  | While(c, s) ->
+    let test_label = new_label()
+    and code_label = new_label()
+    in
+    b test_label
+    @@ label code_label
+    @@ tr_seq s
+    @@ label test_label
+    @@ tr_expr c
+    @@ bnez t0 code_label
+
+
+module VSet = Set.Make(String)
+let rec vars_expr = function
+  | Cst _ -> VSet.empty
+  | Var x -> VSet.singleton x
+  | Bop(_, e1, e2) -> 
+    VSet.union (vars_expr e1) (vars_expr e2)
+let rec vars_instr = function
+  | Print e -> vars_expr e
+  | Set(x, e) -> 
+     VSet.add x (vars_expr e)
+  | While(e, s) -> 
+     VSet.union (vars_expr e) (vars_seq s)
+  | If(e, s1, s2) -> 
+     VSet.union (vars_expr e) 
+       (VSet.union (vars_seq s1) (vars_seq s2))
+and vars_seq = function
+  | []   -> VSet.empty
+  | i::s -> VSet.union (vars_instr i) (vars_seq s)
+
+let tr_prog p =
+  let text = tr_seq p in
+  let vars = vars_seq p in
+  let data = VSet.fold 
+      (fun id code -> label id @@ dword [0] @@ code) 
+      vars nop 
+  in
+  { text; data }
