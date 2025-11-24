@@ -56,6 +56,7 @@ let prog (fmt,ld) =
   let check_function f = failwith "case not implemented in check_function"
 
   in Env.iter (fun _ lf -> check_fields lf) senv;
-     Env.iter (fun _ fd -> check_function fd) fenv
+  Env.iter (fun _ fd -> check_function fd) fenv;
+  ld (* ici on renvoie le programme initial, mais on peut aussi appliquer des transformations en vue de la compilation *)
 
 

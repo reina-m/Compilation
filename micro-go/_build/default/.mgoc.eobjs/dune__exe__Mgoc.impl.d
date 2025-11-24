@@ -1,1 +1,1 @@
-mgoc.ml: Arg Filename Format Lexing Mgolexer Mgoparser Printexc Typechecker
+mgoc.ml: Arg Compile Filename Format Lexing Mgolexer Mgoparser Mips Parsing Printexc Typechecker
