@@ -7,6 +7,7 @@ let (@@) x y = C (x, y)
 
 type program = { text: asm; data: asm; }
 
+(* accumulateur de compilation pour le code MIPS : segment texte, données et table des constantes des chaînes *)
 type builder = {
   mutable text : asm;
   mutable data : asm;
@@ -77,17 +78,21 @@ let print_program fmt (p: program) =
     fprintf fmt ".data\n";
     print_asm fmt p.data
 
+(* crée un builder vide pour un programme microgo *)
 let create () =
   { text = nop; data = nop; strings = Hashtbl.create 17; counter = 0 }
 
+(* noms et label uniques *)
 let fresh ?(prefix = "L") b =
   let lbl = Printf.sprintf "%s%d" prefix b.counter in
   b.counter <- b.counter + 1;
   lbl
 
+(* ajout du code dans le segment .text du programme (instructions) *)
 let emit_text (b: builder) code =
   b.text <- b.text @@ code
 
+(* ajout de déclarations dans le segment .data du programme (constantes, chaînes...) *)
 let emit_data (b: builder) code =
   b.data <- b.data @@ code
 
@@ -101,6 +106,7 @@ let escape s =
     s;
   Buffer.contents buf
 
+(* une chaîne est représentée par un pointeur vers une chaîne allouée dans le segment de données *)
 let string_const (b: builder) lit =
   match Hashtbl.find_opt b.strings lit with
   | Some lbl -> lbl

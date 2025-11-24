@@ -5,12 +5,21 @@ let new_label =
   let cpt = ref (-1) in
   fun () -> incr cpt; Printf.sprintf "_label_%i" !cpt
 
+let current_ctx : builder option ref = ref None
+
+let get_ctx () =
+  match !current_ctx with
+  | Some b -> b
+  | None -> failwith "compile: builder not initialised"
+
 (* le résultat de l'expression est dans le registre $t0,
    la pile est utilisée pour les valeurs intermédiaires *)
 let rec tr_expr e = match e.edesc with
   | Int(n)  -> li t0 (Int64.to_int n)   (* on supposera que les constantes entières
                                            sont représentables sur 32 bits *)
-  | String(s) -> failwith "A compléter" (* allocation des chaînes dans la zone de données statiques *)
+  | String(s) ->
+      let lbl = string_const (get_ctx ()) s in
+      la t0 lbl
   | Var(id) -> failwith "A compléter"
   | Binop(bop, e1, e2) ->
     let op = match bop with
@@ -67,4 +76,10 @@ let rec tr_ldecl = function
   | _ :: p -> tr_ldecl p
   | [] -> nop
 
-let tr_prog p =  { text = tr_ldecl p ; data = (failwith "A compléter") }
+let tr_prog p =
+  let b = create () in
+  current_ctx := Some b;
+  let text = tr_ldecl p in
+  emit_text b text;
+  current_ctx := None;
+  to_program b
