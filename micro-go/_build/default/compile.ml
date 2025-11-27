@@ -6,11 +6,17 @@ let new_label =
   fun () -> incr cpt; Printf.sprintf "_label_%i" !cpt
 
 let current_ctx : builder option ref = ref None
+let current_env : (string * int) list ref = ref []
+let current_locals = ref 0
 
 let get_ctx () =
   match !current_ctx with
   | Some b -> b
   | None -> failwith "compile: builder not initialised"
+
+let lookup id =
+  try List.assoc id !current_env
+  with Not_found -> failwith ("var inconnue: " ^ id)
 
 (* le résultat de l'expression est dans le registre $t0,
    la pile est utilisée pour les valeurs intermédiaires *)
@@ -20,13 +26,30 @@ let rec tr_expr e = match e.edesc with
   | String(s) ->
       let lbl = string_const (get_ctx ()) s in
       la t0 lbl
-  | Var(id) -> failwith "A compléter"
+  | Var(id) ->
+      let off = lookup id.id in
+      lw t0 off sp
+  | Unop(Opp, e1) ->
+      tr_expr e1
+      @@ sub t0 zero t0
+  | Unop(Not, e1) ->
+      tr_expr e1
+      @@ seq t0 t0 zero
   | Binop(bop, e1, e2) ->
     let op = match bop with
       | Add -> add
+      | Sub -> sub
       | Mul -> mul
+      | Div -> (fun x y z -> div_ x z @@ mflo x)
+      | Rem -> (fun x y z -> div_ x z @@ mfhi x)
       | Lt  -> slt
+      | Gt  -> (fun x y z -> slt x z y)
+      | Le  -> (fun x y z -> slt x z y @@ seq x x zero)
+      | Ge  -> (fun x y z -> slt x x z @@ seq x x zero)
+      | Eq  -> seq
+      | Neq -> sne
       | And -> and_
+      | Or  -> or_
       | _ -> failwith "A compléter"
     in
     tr_expr e2
@@ -34,6 +57,27 @@ let rec tr_expr e = match e.edesc with
     @@ tr_expr e1
     @@ pop t1
     @@ op t0 t0 t1
+  | Call(fn, args) ->
+      let rec push_args = function
+        | [] -> nop
+        | a :: q -> push_args q @@ tr_expr a @@ push t0
+      in
+      let rec pop_args = function
+        | [] -> nop
+        | _ :: q -> pop t1 @@ pop_args q
+      in
+      push_args args
+      @@ jal fn.id
+      @@ pop_args args
+  | Print args ->
+      let rec emit = function
+        | [] -> nop
+        | a :: q ->
+            tr_expr a
+            @@ jal "print_int" (* on reste sur int pour l'instant *)
+            @@ emit q
+      in
+      emit args
   | _ -> failwith "A compléter"
 
 
@@ -70,14 +114,47 @@ and tr_instr i = match i.idesc with
      | [] -> nop
      | [e] -> tr_expr e
      | _ -> failwith "retours multiples non gérés")
+    @@ addi sp sp (!current_locals) (* désalloue les locaux *)
+    @@ pop ra
     @@ jr ra
   | Expr e ->
     tr_expr e
+  | Set (lhs, rhs) ->
+      (match lhs, rhs with
+       | [e1], [e2] ->
+           (match e1.edesc with
+            | Var id ->
+                let off = lookup id.id in
+                tr_expr e2 @@ sw t0 off sp
+            | _ -> failwith "affectation complexe non gérée")
+       | _ -> failwith "affectation multiple non gérée")
+  | Inc e ->
+      (match e.edesc with
+       | Var id ->
+           let off = lookup id.id in
+           lw t0 off sp @@ addi t0 t0 1 @@ sw t0 off sp
+       | _ -> failwith "inc sur non-var")
+  | Dec e ->
+      (match e.edesc with
+       | Var id ->
+           let off = lookup id.id in
+           lw t0 off sp @@ addi t0 t0 (-1) @@ sw t0 off sp
+       | _ -> failwith "dec sur non-var")
   | _ -> failwith "A compléter"
 
 let tr_fun df =
+  let rec bind_params ofs = function
+    | [] -> []
+    | (id, _) :: q -> (id.id, ofs) :: bind_params (ofs + 4) q
+  in
+  current_env := bind_params 4 df.params;
+  current_locals := 0;
        label df.fname.id
+    @@ push ra
     @@ tr_seq df.body
+    @@ addi sp sp (!current_locals)
+    @@ pop ra
+    @@ jr ra
 
 let rec tr_ldecl = function
     Fun df::p -> tr_fun df @@ tr_ldecl p
