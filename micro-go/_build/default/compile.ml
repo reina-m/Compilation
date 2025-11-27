@@ -65,6 +65,14 @@ and tr_instr i = match i.idesc with
     @@ label test_label
     @@ tr_expr c
     @@ bnez t0 code_label
+  | Return el ->
+    (match el with
+     | [] -> nop
+     | [e] -> tr_expr e
+     | _ -> failwith "retours multiples non gérés")
+    @@ jr ra
+  | Expr e ->
+    tr_expr e
   | _ -> failwith "A compléter"
 
 let tr_fun df =
@@ -76,10 +84,41 @@ let rec tr_ldecl = function
   | _ :: p -> tr_ldecl p
   | [] -> nop
 
+let runtime_helpers b =
+  let lbl_true  = string_const b "true" in
+  let lbl_false = string_const b "false" in
+     label "print_int"
+  @@ move a0 t0
+  @@ li v0 1
+  @@ syscall
+  @@ jr ra
+  @@ label "print_string"
+  @@ move a0 t0
+  @@ li v0 4
+  @@ syscall
+  @@ jr ra
+  @@ label "print_bool"
+  @@ beqz t0 lbl_false
+  @@ la a0 lbl_true
+  @@ li v0 4
+  @@ syscall
+  @@ jr ra
+  @@ label lbl_false
+  @@ la a0 lbl_false
+  @@ li v0 4
+  @@ syscall
+  @@ jr ra
+
+let runtime =
+     label "_start"
+  @@ jal "main"
+  @@ li v0 10
+  @@ syscall
+
 let tr_prog p =
   let b = create () in
   current_ctx := Some b;
-  let text = tr_ldecl p in
-  emit_text b text;
+  let helpers = runtime_helpers b in
+  emit_text b (helpers @@ runtime @@ tr_ldecl p);
   current_ctx := None;
   to_program b

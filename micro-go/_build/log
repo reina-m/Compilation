@@ -13,7 +13,7 @@
 #  ; build_dir = In_build_dir "default"
 #  ; instrument_with = []
 #  }
-$ /Users/reina/.opam/default/bin/ocamlc.opt -config > /var/folders/bn/4m01t3d13sn2kcckjvxhxk8r0000gn/T/dune_329c11_output
+$ /Users/reina/.opam/default/bin/ocamlc.opt -config > /var/folders/bn/4m01t3d13sn2kcckjvxhxk8r0000gn/T/dune_5a6293_output
 $ (cd _build/default && /Users/reina/.opam/default/bin/ocamldep.opt -modules -impl compile.ml) > _build/default/.mgoc.eobjs/dune__exe__Compile.impl.d
 $ (cd _build/default && /Users/reina/.opam/default/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -warn-error -A -g -bin-annot -bin-annot-occurrences -I .mgoc.eobjs/byte -no-alias-deps -opaque -open Dune__exe -o .mgoc.eobjs/byte/dune__exe__Compile.cmo -c -impl compile.ml)
 > File "compile.ml", line 23, characters 7-11:
@@ -21,11 +21,11 @@ $ (cd _build/default && /Users/reina/.opam/default/bin/ocamlc.opt -w @1..3@5..28
 >             ^^^^
 > Warning 27 [unused-var-strict]: unused variable id.
 $ (cd _build/default && /Users/reina/.opam/default/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -warn-error -A -g -bin-annot -bin-annot-occurrences -I .mgoc.eobjs/byte -no-alias-deps -opaque -open Dune__exe -o .mgoc.eobjs/byte/dune__exe__Mgoc.cmo -c -impl mgoc.ml)
-$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -warn-error -A -g -I .mgoc.eobjs/byte -I .mgoc.eobjs/native -cmi-file .mgoc.eobjs/byte/dune__exe__Mgoc.cmi -no-alias-deps -opaque -open Dune__exe -o .mgoc.eobjs/native/dune__exe__Mgoc.cmx -c -impl mgoc.ml)
 $ (cd _build/default && /Users/reina/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -warn-error -A -g -I .mgoc.eobjs/byte -I .mgoc.eobjs/native -cmi-file .mgoc.eobjs/byte/dune__exe__Compile.cmi -no-alias-deps -opaque -open Dune__exe -o .mgoc.eobjs/native/dune__exe__Compile.cmx -c -impl compile.ml)
 > File "compile.ml", line 23, characters 7-11:
 > 23 |   | Var(id) -> failwith "A compléter"
 >             ^^^^
 > Warning 27 [unused-var-strict]: unused variable id.
+$ (cd _build/default && /Users/reina/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -warn-error -A -g -I .mgoc.eobjs/byte -I .mgoc.eobjs/native -cmi-file .mgoc.eobjs/byte/dune__exe__Mgoc.cmi -no-alias-deps -opaque -open Dune__exe -o .mgoc.eobjs/native/dune__exe__Mgoc.cmx -c -impl mgoc.ml)
 $ (cd _build/default && /Users/reina/.opam/default/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -warn-error -A -g -o mgoc.exe .mgoc.eobjs/native/dune__exe.cmx .mgoc.eobjs/native/dune__exe__Mgoast.cmx .mgoc.eobjs/native/dune__exe__Mips.cmx .mgoc.eobjs/native/dune__exe__Compile.cmx .mgoc.eobjs/native/dune__exe__Mgoparser.cmx .mgoc.eobjs/native/dune__exe__Mgolexer.cmx .mgoc.eobjs/native/dune__exe__Typechecker.cmx .mgoc.eobjs/native/dune__exe__Mgoc.cmx)
 # Promoting "_build/default/mgoc.exe" to "mgoc.exe"
