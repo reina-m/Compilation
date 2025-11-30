@@ -2,20 +2,20 @@ open Mgoast
 open Mips
 
 (* informations d'environnement pour les variables locales et paramètres *)
-type binding = { offset : int; typ : typ option }
+type var_info = { offset : int; typ : typ option }
 
 let new_label =
   let cpt = ref (-1) in
   fun () -> incr cpt; Printf.sprintf "_label_%i" !cpt
 
 let current_ctx : builder option ref = ref None
-let current_env : (string, binding) Hashtbl.t ref = ref (Hashtbl.create 17)
+let current_env : (string, var_info) Hashtbl.t ref = ref (Hashtbl.create 17)
 let current_return_types : typ list ref = ref []
 let current_return_buffer_offset : int option ref = ref None
 let struct_offsets : (string * string, int) Hashtbl.t = Hashtbl.create 17
 let struct_sizes : (string, int) Hashtbl.t = Hashtbl.create 17
 let struct_fields : (string, (ident * typ) list) Hashtbl.t = Hashtbl.create 17
-let function_returns : (string, typ list) Hashtbl.t = Hashtbl.create 17
+let fun_ret_types : (string, typ list) Hashtbl.t = Hashtbl.create 17
 
 let get_ctx () =
   match !current_ctx with
@@ -33,7 +33,7 @@ let lookup_offset name = (find_binding name).offset
 let lookup_type name = (find_binding name).typ
 
 let function_return_types fname =
-  match Hashtbl.find_opt function_returns fname with
+  match Hashtbl.find_opt fun_ret_types fname with
   | Some r -> r
   | None -> failwith ("fonction inconnue: " ^ fname)
 
@@ -67,7 +67,7 @@ let rec infer_expr_type e =
             | None -> None)
        | _ -> None)
   | Call (fn, _) ->
-      (match Hashtbl.find_opt function_returns fn.id with
+      (match Hashtbl.find_opt fun_ret_types fn.id with
        | Some (ret :: _) -> Some ret
        | _ -> None)
   | Unop (_, _) -> Some TInt
@@ -114,7 +114,7 @@ let rec tr_expr e = match e.edesc with
       let returns = function_return_types fn.id in
       (match returns with
        | [] -> failwith "appel sans valeur utilisé comme expression"
-       | [_] -> call_single fn.id args
+       | [_] -> call_expr fn.id args
        | _ -> failwith "appel multivalué utilisé comme expression")
   | Print args ->
       let rec emit = function
@@ -143,7 +143,8 @@ let rec tr_expr e = match e.edesc with
       let offset = field_offset struct_name field.id in
       tr_expr expr @@ lw t0 offset t0
 
-and call_single fname args =
+(* cours §9.1 — protocole d'appel standard : arguments empilés droite→gauche, retour dans $t0 *)
+and call_expr fname args =
   let rec push_args = function
     | [] -> nop
     | a :: q -> push_args q @@ tr_expr a @@ push t0
@@ -169,7 +170,7 @@ and call_store_multi fname args base_reg offset =
   @@ jal fname
   @@ (if argc = 0 then nop else addi sp sp (4 * argc))
 
-and call_ignore fname args =
+and call_stmt fname args =
   let returns = function_return_types fname in
   match returns with
   | [] ->
@@ -182,7 +183,7 @@ and call_ignore fname args =
       @@ jal fname
       @@ (if argc = 0 then nop else addi sp sp (4 * argc))
   | [_] ->
-      call_single fname args
+      call_expr fname args
   | _ ->
       let ret_count = List.length returns in
       let alloc = addi sp sp (-4 * ret_count) @@ move t3 sp in
@@ -197,18 +198,19 @@ and store_expr base_reg offset e =
       let ret_count = List.length returns in
       (match ret_count with
        | 0 -> failwith "appel sans valeur dans une expression multiple"
-       | 1 -> call_single fn.id args @@ sw t0 offset base_reg
+       | 1 -> call_expr fn.id args @@ sw t0 offset base_reg
        | _ -> call_store_multi fn.id args base_reg offset)
   | _ ->
       tr_expr e @@ sw t0 offset base_reg
 
-and store_expr_list base_reg offset exprs =
+(* stocke les valeurs calculées dans un tampon fourni (cours §9.1, convention d'appel étendue) *)
+and store_values base_reg offset exprs =
   match exprs with
   | [] -> nop
   | e :: rest ->
       let arity = expr_value_count e in
       store_expr base_reg offset e
-      @@ store_expr_list base_reg (offset + 4 * arity) rest
+      @@ store_values base_reg (offset + 4 * arity) rest
 
 and assign_from_buffer base_reg index lhs =
   match lhs with
@@ -282,7 +284,7 @@ and tr_instr i = match i.idesc with
                | None -> failwith "return: buffer absent"
                | Some off ->
                    lw t3 off fp
-                   @@ store_expr_list t3 0 el)
+                   @@ store_values t3 0 el)
       in
       code
       @@ move sp fp
@@ -291,7 +293,7 @@ and tr_instr i = match i.idesc with
       @@ jr ra
   | Expr e ->
       (match e.edesc with
-       | Call (fn, args) -> call_ignore fn.id args
+       | Call (fn, args) -> call_stmt fn.id args
        | _ -> tr_expr e)
   | Set (lhs, rhs) ->
       let total = total_value_count rhs in
@@ -305,7 +307,7 @@ and tr_instr i = match i.idesc with
           if total = 0 then nop else addi sp sp (4 * total)
         in
         alloc
-        @@ store_expr_list t2 0 rhs
+        @@ store_values t2 0 rhs
         @@ assign_from_buffer t2 0 lhs
         @@ release
   | Inc e ->
@@ -323,13 +325,14 @@ and tr_instr i = match i.idesc with
   | Block s -> tr_seq s
   | Vars (_, _, init_seq) -> tr_seq init_seq
 
-let rec alloc_seq env acc = function
+(* cours §9.3 — les variables locales sont stockées à des offsets négatifs par rapport à $fp *)
+let rec alloc_vars_seq env acc = function
   | [] -> acc
   | i :: q ->
-      let after_i = alloc_instr env acc i in
-      alloc_seq env after_i q
+      let after_i = alloc_vars_instr env acc i in
+      alloc_vars_seq env after_i q
 
-and alloc_instr env acc i =
+and alloc_vars_instr env acc i =
   match i.idesc with
   | Vars (ids, typ_opt, init_seq) ->
       let typ = match typ_opt with Some t -> Some t | None -> None in
@@ -338,15 +341,16 @@ and alloc_instr env acc i =
           Hashtbl.replace env id.id { offset = -new_ofs; typ };
           new_ofs) acc ids
       in
-      alloc_seq env next init_seq
+      alloc_vars_seq env next init_seq
   | If (_, s1, s2) ->
-      let after_s1 = alloc_seq env acc s1 in
-      alloc_seq env after_s1 s2
-  | For (_, s) -> alloc_seq env acc s
-  | Block s -> alloc_seq env acc s
+      let after_s1 = alloc_vars_seq env acc s1 in
+      alloc_vars_seq env after_s1 s2
+  | For (_, s) -> alloc_vars_seq env acc s
+  | Block s -> alloc_vars_seq env acc s
   | _ -> acc
 
-let prepare_function_env df =
+(* cours §9.3 — on alloue l'enregistrement d'activation en parcourant le corps *)
+let alloc_activation_record df =
   let env = Hashtbl.create 17 in
   let param_offset = ref 8 in
   List.iter (fun (id, typ) ->
@@ -360,9 +364,10 @@ let prepare_function_env df =
       Some off
     end else None
   in
-  let locals_size = alloc_seq env 0 df.body in
+  let locals_size = alloc_vars_seq env 0 df.body in
   (env, locals_size, ret_buf)
 
+(* cours §9.1 — prologue standard : sauvegarde $ra/$fp, déplacement de $fp, espace pour les locaux *)
 let prologue locals_size =
   push ra
   @@ push fp
@@ -376,7 +381,7 @@ let epilogue =
   @@ jr ra
 
 let tr_fun df =
-  let env, locals_size, ret_buf = prepare_function_env df in
+  let env, locals_size, ret_buf = alloc_activation_record df in
   current_env := env;
   current_return_types := df.return;
   current_return_buffer_offset := ret_buf;
@@ -413,7 +418,7 @@ let tr_prog p =
   Hashtbl.reset struct_offsets;
   Hashtbl.reset struct_sizes;
   Hashtbl.reset struct_fields;
-  Hashtbl.reset function_returns;
+  Hashtbl.reset fun_ret_types;
   List.iter (fun decl ->
       match decl with
       | Struct s ->
@@ -427,7 +432,7 @@ let tr_prog p =
                 add_offsets (offset + 4) rest
           in
           add_offsets 0 s.fields
-      | Fun f -> Hashtbl.replace function_returns f.fname.id f.return) p;
+      | Fun f -> Hashtbl.replace fun_ret_types f.fname.id f.return) p;
   let helpers = runtime_helpers b in
   emit_text b (helpers @@ runtime @@ tr_ldecl p);
   current_ctx := None;
