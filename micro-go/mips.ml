@@ -12,14 +12,16 @@ type builder = {
   mutable text : asm;
   mutable data : asm;
   strings : (string, string) Hashtbl.t;
-  mutable counter : int;
 }
 
 let t0 = "$t0"
 let t1 = "$t1"
+let t2 = "$t2"
+let t3 = "$t3"
 let a0 = "$a0"
 let v0 = "$v0"
 let sp = "$sp"
+let fp = "$fp"
 let ra = "$ra"
 let zero = "$zero"
 
@@ -88,13 +90,12 @@ let print_program fmt (p: program) =
 
 (* crée un builder vide pour un programme microgo *)
 let create () =
-  { text = nop; data = nop; strings = Hashtbl.create 17; counter = 0 }
+  { text = nop; data = nop; strings = Hashtbl.create 17 }
 
-(* noms et label uniques *)
-let fresh ?(prefix = "L") b =
-  let lbl = Printf.sprintf "%s%d" prefix b.counter in
-  b.counter <- b.counter + 1;
-  lbl
+(* noms et label uniques, code de la page 57 du poly partie I *)
+let new_label =
+  let cpt = ref (-1) in
+  fun s -> incr cpt; Printf.sprintf "__%s_%d" s !cpt
 
 (* ajout du code dans le segment .text du programme (instructions) *)
 let emit_text (b: builder) code =
@@ -119,7 +120,7 @@ let string_const (b: builder) lit =
   match Hashtbl.find_opt b.strings lit with
   | Some lbl -> lbl
   | None ->
-      let lbl = fresh ~prefix:"str" b in
+      let lbl = new_label "str" in
       let escaped = escape lit in
       emit_data b (label lbl @@ asciiz (Printf.sprintf "\"%s\"" escaped));
       Hashtbl.add b.strings lit lbl;
