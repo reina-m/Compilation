@@ -1,1 +1,1 @@
-compile.ml: Int64 List Mgoast Mips Printf
+compile.ml: Hashtbl Int64 List Mgoast Mips Printf

@@ -68,9 +68,9 @@ let dword l  = S(sprintf "  .word %s" (ilist l))
 let asciiz s = S(sprintf "  .asciiz %s" s)
 
 let push r =
-    addi sp sp (-4) @@ sw r 0(sp)
+    addi sp sp (-4) @@ sw r 0 sp
 let pop r =
-    lw r 0(sp) @@ addi sp sp 4
+    lw r 0 sp @@ addi sp sp 4
 
 let rec print_asm fmt a =
     match a with

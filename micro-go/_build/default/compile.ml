@@ -8,6 +8,8 @@ let new_label =
 let current_ctx : builder option ref = ref None
 let current_env : (string * int) list ref = ref []
 let current_locals = ref 0
+let struct_fields : (string, (ident * typ) list) Hashtbl.t = Hashtbl.create 17
+let struct_offsets : (string * string, int) Hashtbl.t = Hashtbl.create 17
 
 let get_ctx () =
   match !current_ctx with
@@ -17,6 +19,18 @@ let get_ctx () =
 let lookup id =
   try List.assoc id !current_env
   with Not_found -> failwith ("var inconnue: " ^ id)
+
+(* compute field offset for a struct *)
+let get_field_offset struct_name field_name =
+  try Hashtbl.find struct_offsets (struct_name, field_name)
+  with Not_found -> failwith ("field " ^ field_name ^ " not found in struct " ^ struct_name)
+
+(* struct size in bytes *)
+let get_struct_size struct_name =
+  try
+    let fields = Hashtbl.find struct_fields struct_name in
+    List.length fields * 4  (* each field is 4 bytes *)
+  with Not_found -> failwith ("struct " ^ struct_name ^ " not defined")
 
 (* le résultat de l'expression est dans le registre $t0,
    la pile est utilisée pour les valeurs intermédiaires *)
@@ -50,7 +64,6 @@ let rec tr_expr e = match e.edesc with
       | Neq -> sne
       | And -> and_
       | Or  -> or_
-      | _ -> failwith "A compléter"
     in
     tr_expr e2
     @@ push t0
@@ -73,12 +86,46 @@ let rec tr_expr e = match e.edesc with
       let rec emit = function
         | [] -> nop
         | a :: q ->
-            tr_expr a
-            @@ jal "print_int" (* on reste sur int pour l'instant *)
+            (match a.edesc with
+             | Int _ | Binop _ | Unop _ | Var _ | Call _ ->
+                 tr_expr a
+                 @@ jal "print_int"
+             | Bool _ ->
+                 tr_expr a
+                 @@ jal "print_bool"
+             | String _ ->
+                 tr_expr a
+                 @@ jal "print_string"
+             | _ ->
+                 tr_expr a
+                 @@ jal "print_int")  (* default to int *)
             @@ emit q
       in
       emit args
-  | _ -> failwith "A compléter"
+  | Bool(b) ->
+      li t0 (if b then 1 else 0)
+  | Nil ->
+      li t0 0
+  | New(struct_name) ->
+      (* allocation sur le tas avec taille correcte *)
+      let size = get_struct_size struct_name in
+      li a0 size
+      @@ li v0 9
+      @@ syscall
+      @@ move t0 v0
+  | Dot(e, field) ->
+      (* accès à un champ avec offset correct *)
+      (match e.edesc with
+       | Var id ->
+           let struct_type = (try
+             (match List.assoc id.id !current_env with _ -> "")
+           with _ -> "")
+           in
+           tr_expr e
+           @@ lw t0 (get_field_offset struct_type field.id) t0
+       | _ ->
+           tr_expr e
+           @@ lw t0 0 t0)  (* fallback to first field *)
 
 
 let rec tr_seq = function
@@ -140,7 +187,17 @@ and tr_instr i = match i.idesc with
            let off = lookup id.id in
            lw t0 off sp @@ addi t0 t0 (-1) @@ sw t0 off sp
        | _ -> failwith "dec sur non-var")
-  | _ -> failwith "A compléter"
+  | Block s ->
+      tr_seq s
+  | Vars(ids, _typ_opt, init_seq) ->
+      let n = List.length ids in
+      current_locals := !current_locals + n * 4;
+      let rec bind_vars offset = function
+        | [] -> []
+        | id :: q -> (id.id, offset) :: bind_vars (offset + 4) q
+      in
+      current_env := (bind_vars (4) (List.rev ids)) @ !current_env;
+      tr_seq init_seq
 
 let tr_fun df =
   let rec bind_params ofs = function
@@ -195,6 +252,22 @@ let runtime =
 let tr_prog p =
   let b = create () in
   current_ctx := Some b;
+  
+  (* initialize struct field information *)
+  List.iter (fun decl ->
+    match decl with
+    | Struct s ->
+        Hashtbl.add struct_fields s.sname.id s.fields;
+        (* precompute field offsets *)
+        let rec set_offsets offset = function
+          | [] -> ()
+          | (field_name, _field_typ) :: rest ->
+              Hashtbl.add struct_offsets (s.sname.id, field_name.id) offset;
+              set_offsets (offset + 4) rest
+        in
+        set_offsets 0 s.fields
+    | Fun _ -> ()) p;
+  
   let helpers = runtime_helpers b in
   emit_text b (helpers @@ runtime @@ tr_ldecl p);
   current_ctx := None;
