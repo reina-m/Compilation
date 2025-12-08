@@ -1,5 +1,4 @@
 package main;
-import "fmt";
 
 // appel multi-retour utilisé comme instruction (valeurs ignorées)
 

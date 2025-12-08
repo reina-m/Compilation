@@ -5,10 +5,12 @@ let usage = "usage: mgoc [options] file.go"
 
 let parse_only = ref false
 let type_only = ref true
+let skip_typecheck = ref false
     
 let spec =
   [ "--parse-only", Arg.Set parse_only, "  stops after parsing";
     "--type-only", Arg.Set type_only, "  stops after typing";
+    "--unsafe-no-typecheck", Arg.Set skip_typecheck, "  bypass typechecking (unsafe, for quick codegen)";
   ]
 
 let file =
@@ -31,12 +33,14 @@ let () =
   let c = open_in file in
   let lb = Lexing.from_channel c in
   try
-    let f = Mgoparser.prog Mgolexer.token lb in
+    let parsed = Mgoparser.prog Mgolexer.token lb in
     close_in c;
     if !parse_only then exit 0;
-    let f = Typechecker.prog f in
+    let decls =
+      if !skip_typecheck then snd parsed else Typechecker.prog parsed
+    in
     if !type_only then exit 0;
-    let code = Compile.tr_prog f in
+    let code = Compile.tr_prog decls in
     let c = open_out (Filename.chop_suffix file ".go" ^ ".s") in
     Mips.print_program c code;
     close_out c
@@ -60,5 +64,3 @@ let () =
     | e ->
 	eprintf "Anomaly: %s\n@." (Printexc.to_string e);
 	exit 2
-
-

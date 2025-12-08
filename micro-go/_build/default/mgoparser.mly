@@ -1,6 +1,5 @@
 %{
 
-  open Lexing
   open Mgoast
 
   exception Error
@@ -243,7 +242,10 @@ instr_simple:
     {
       let ids = only_vars lhs in
       let lhs_exprs = List.map mk_var ids in
-      mk_i ($startpos, $endpos) (Set (lhs_exprs, rhs))
+      let loc = ($startpos, $endpos) in
+      (* Vars(ids, None, [assign]) *)
+      let assign = mk_i loc (Set(lhs_exprs, rhs)) in
+      mk_i loc (Vars(ids, None, [assign]))
     }
 ;
 
@@ -284,25 +286,44 @@ args_opt:
           | ⟨expr⟩ ⟨op⟩ ⟨expr⟩ */
 
 expr_desc:
+  /* Constantes */
 | n=INT                       { Int(n) }
 | s=STRING                    { String(s) }
 | TRUE                        { Bool(true) }
 | FALSE                       { Bool(false) }
 | NIL                         { Nil }
-| NEW LPAR s=IDENT RPAR       { New(s) } // new(S) crée une nouvelle structure
+
+  /* new(T) */
+| NEW LPAR s=IDENT RPAR       { New(s) }
+
+  /* (expr) */
 | LPAR e=expr RPAR            { e.edesc }
+
+  /* Identifiant */
 | x=ident                     { Var(x) }
+
+  /* Accès champ : e.field */
 | e=expr DOT field=ident      { Dot(e, field) }
+
+  /* Appel de fonction classique : f(args...) */
 | fn=ident LPAR args=args_opt RPAR
-    { Call(fn, args) } // appel classique
+    { Call(fn, args) }
+
+  /* Appel spécial fmt.Print(...) */
 | target=expr DOT meth=ident LPAR args=args_opt RPAR
     {
       match target.edesc with
-      | Var pkg when pkg.id = "fmt" && meth.id = "Print" -> Print(args)
-      | _ -> raise Error
+      | Var pkg when pkg.id = "fmt" && meth.id = "Print" ->
+          Print(args)
+      | _ ->
+          raise Error
     }
+
+  /* Unaires */
 | MINUS e=expr %prec UMINUS   { Unop(Opp, e) }
 | NOT e=expr %prec UNOT       { Unop(Not, e) }
+
+  /* Binaires */
 | e1=expr PLUS e2=expr        { Binop(Add, e1, e2) }
 | e1=expr MINUS e2=expr       { Binop(Sub, e1, e2) }
 | e1=expr STAR e2=expr        { Binop(Mul, e1, e2) }

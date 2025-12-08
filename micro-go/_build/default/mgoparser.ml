@@ -14,7 +14,7 @@ module MenhirBasics = struct
     | STRUCT
     | STRING1
     | STRING of (
-# 25 "mgoparser.mly"
+# 24 "mgoparser.mly"
        (string)
 # 20 "mgoparser.ml"
   )
@@ -36,7 +36,7 @@ module MenhirBasics = struct
     | LE
     | INT1
     | INT of (
-# 23 "mgoparser.mly"
+# 22 "mgoparser.mly"
        (int64)
 # 42 "mgoparser.ml"
   )
@@ -44,7 +44,7 @@ module MenhirBasics = struct
     | IMPORT
     | IF
     | IDENT of (
-# 24 "mgoparser.mly"
+# 23 "mgoparser.mly"
        (string)
 # 50 "mgoparser.ml"
   )
@@ -74,7 +74,6 @@ include MenhirBasics
 # 1 "mgoparser.mly"
   
 
-  open Lexing
   open Mgoast
 
   exception Error
@@ -93,7 +92,7 @@ include MenhirBasics
         | _ -> raise Error) el
 
 
-# 97 "mgoparser.ml"
+# 96 "mgoparser.ml"
 
 type ('s, 'r) _menhir_state = 
   | MenhirState003 : ('s _menhir_cell0_IDENT, _menhir_box_prog) _menhir_state
@@ -524,9 +523,9 @@ and ('s, 'r) _menhir_cell1_GT =
 
 and 's _menhir_cell0_IDENT = 
   | MenhirCell0_IDENT of 's * (
-# 24 "mgoparser.mly"
+# 23 "mgoparser.mly"
        (string)
-# 530 "mgoparser.ml"
+# 529 "mgoparser.ml"
 ) * Lexing.position * Lexing.position
 
 and ('s, 'r) _menhir_cell1_IF = 
@@ -579,9 +578,9 @@ and ('s, 'r) _menhir_cell1_STAR =
 
 and 's _menhir_cell0_STRING = 
   | MenhirCell0_STRING of 's * (
-# 25 "mgoparser.mly"
+# 24 "mgoparser.mly"
        (string)
-# 585 "mgoparser.ml"
+# 584 "mgoparser.ml"
 ) * Lexing.position * Lexing.position
 
 and ('s, 'r) _menhir_cell1_TYPE = 
@@ -596,41 +595,41 @@ and _menhir_box_prog =
 let _menhir_action_01 =
   fun () ->
     (
-# 273 "mgoparser.mly"
+# 275 "mgoparser.mly"
              ( [] )
-# 602 "mgoparser.ml"
+# 601 "mgoparser.ml"
      : (Mgoast.expr list))
 
 let _menhir_action_02 =
   fun es ->
     (
-# 274 "mgoparser.mly"
+# 276 "mgoparser.mly"
                 ( es )
-# 610 "mgoparser.ml"
+# 609 "mgoparser.ml"
      : (Mgoast.expr list))
 
 let _menhir_action_03 =
   fun instrs ->
     (
-# 146 "mgoparser.mly"
+# 145 "mgoparser.mly"
                        ( instrs )
-# 618 "mgoparser.ml"
+# 617 "mgoparser.ml"
      : (Mgoast.seq))
 
 let _menhir_action_04 =
   fun groups id ->
     (
-# 66 "mgoparser.mly"
+# 65 "mgoparser.mly"
   ( Struct { sname = id; fields = List.flatten groups } )
-# 626 "mgoparser.ml"
+# 625 "mgoparser.ml"
      : (Mgoast.decl))
 
 let _menhir_action_05 =
   fun b fname pl ret ->
     (
-# 69 "mgoparser.mly"
+# 68 "mgoparser.mly"
   ( Fun { fname = fname; params = pl; return = ret; body = b } )
-# 634 "mgoparser.ml"
+# 633 "mgoparser.ml"
      : (Mgoast.decl))
 
 let _menhir_action_06 =
@@ -638,301 +637,303 @@ let _menhir_action_06 =
     let _endpos = _endpos_e_ in
     let _startpos = _startpos_e_ in
     (
-# 268 "mgoparser.mly"
+# 270 "mgoparser.mly"
                 (  { eloc = _startpos, _endpos; edesc = e } )
-# 644 "mgoparser.ml"
+# 643 "mgoparser.ml"
      : (Mgoast.expr))
 
 let _menhir_action_07 =
   fun n ->
     (
-# 287 "mgoparser.mly"
+# 290 "mgoparser.mly"
                               ( Int(n) )
-# 652 "mgoparser.ml"
+# 651 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_08 =
   fun s ->
     (
-# 288 "mgoparser.mly"
+# 291 "mgoparser.mly"
                               ( String(s) )
-# 660 "mgoparser.ml"
+# 659 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_09 =
   fun () ->
     (
-# 289 "mgoparser.mly"
+# 292 "mgoparser.mly"
                               ( Bool(true) )
-# 668 "mgoparser.ml"
+# 667 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_10 =
   fun () ->
     (
-# 290 "mgoparser.mly"
+# 293 "mgoparser.mly"
                               ( Bool(false) )
-# 676 "mgoparser.ml"
+# 675 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_11 =
   fun () ->
     (
-# 291 "mgoparser.mly"
+# 294 "mgoparser.mly"
                               ( Nil )
-# 684 "mgoparser.ml"
+# 683 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_12 =
   fun s ->
     (
-# 292 "mgoparser.mly"
+# 297 "mgoparser.mly"
                               ( New(s) )
-# 692 "mgoparser.ml"
+# 691 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_13 =
   fun e ->
     (
-# 293 "mgoparser.mly"
+# 300 "mgoparser.mly"
                               ( e.edesc )
-# 700 "mgoparser.ml"
+# 699 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_14 =
   fun x ->
     (
-# 294 "mgoparser.mly"
+# 303 "mgoparser.mly"
                               ( Var(x) )
-# 708 "mgoparser.ml"
+# 707 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_15 =
   fun e field ->
     (
-# 295 "mgoparser.mly"
+# 306 "mgoparser.mly"
                               ( Dot(e, field) )
-# 716 "mgoparser.ml"
+# 715 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_16 =
   fun args fn ->
     (
-# 297 "mgoparser.mly"
+# 310 "mgoparser.mly"
     ( Call(fn, args) )
-# 724 "mgoparser.ml"
+# 723 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_17 =
   fun args meth target ->
     (
-# 299 "mgoparser.mly"
+# 314 "mgoparser.mly"
     (
       match target.edesc with
-      | Var pkg when pkg.id = "fmt" && meth.id = "Print" -> Print(args)
-      | _ -> raise Error
+      | Var pkg when pkg.id = "fmt" && meth.id = "Print" ->
+          Print(args)
+      | _ ->
+          raise Error
     )
-# 736 "mgoparser.ml"
+# 737 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_18 =
   fun e ->
     (
-# 304 "mgoparser.mly"
+# 323 "mgoparser.mly"
                               ( Unop(Opp, e) )
-# 744 "mgoparser.ml"
+# 745 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_19 =
   fun e ->
     (
-# 305 "mgoparser.mly"
+# 324 "mgoparser.mly"
                               ( Unop(Not, e) )
-# 752 "mgoparser.ml"
+# 753 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_20 =
   fun e1 e2 ->
     (
-# 306 "mgoparser.mly"
+# 327 "mgoparser.mly"
                               ( Binop(Add, e1, e2) )
-# 760 "mgoparser.ml"
+# 761 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_21 =
   fun e1 e2 ->
     (
-# 307 "mgoparser.mly"
+# 328 "mgoparser.mly"
                               ( Binop(Sub, e1, e2) )
-# 768 "mgoparser.ml"
+# 769 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_22 =
   fun e1 e2 ->
     (
-# 308 "mgoparser.mly"
+# 329 "mgoparser.mly"
                               ( Binop(Mul, e1, e2) )
-# 776 "mgoparser.ml"
+# 777 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_23 =
   fun e1 e2 ->
     (
-# 309 "mgoparser.mly"
+# 330 "mgoparser.mly"
                               ( Binop(Div, e1, e2) )
-# 784 "mgoparser.ml"
+# 785 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_24 =
   fun e1 e2 ->
     (
-# 310 "mgoparser.mly"
+# 331 "mgoparser.mly"
                               ( Binop(Rem, e1, e2) )
-# 792 "mgoparser.ml"
+# 793 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_25 =
   fun e1 e2 ->
     (
-# 311 "mgoparser.mly"
+# 332 "mgoparser.mly"
                               ( Binop(Eq, e1, e2) )
-# 800 "mgoparser.ml"
+# 801 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_26 =
   fun e1 e2 ->
     (
-# 312 "mgoparser.mly"
+# 333 "mgoparser.mly"
                               ( Binop(Neq, e1, e2) )
-# 808 "mgoparser.ml"
+# 809 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_27 =
   fun e1 e2 ->
     (
-# 313 "mgoparser.mly"
+# 334 "mgoparser.mly"
                               ( Binop(Lt, e1, e2) )
-# 816 "mgoparser.ml"
+# 817 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_28 =
   fun e1 e2 ->
     (
-# 314 "mgoparser.mly"
+# 335 "mgoparser.mly"
                               ( Binop(Le, e1, e2) )
-# 824 "mgoparser.ml"
+# 825 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_29 =
   fun e1 e2 ->
     (
-# 315 "mgoparser.mly"
+# 336 "mgoparser.mly"
                               ( Binop(Gt, e1, e2) )
-# 832 "mgoparser.ml"
+# 833 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_30 =
   fun e1 e2 ->
     (
-# 316 "mgoparser.mly"
+# 337 "mgoparser.mly"
                               ( Binop(Ge, e1, e2) )
-# 840 "mgoparser.ml"
+# 841 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_31 =
   fun e1 e2 ->
     (
-# 317 "mgoparser.mly"
+# 338 "mgoparser.mly"
                               ( Binop(And, e1, e2) )
-# 848 "mgoparser.ml"
+# 849 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_32 =
   fun e1 e2 ->
     (
-# 318 "mgoparser.mly"
+# 339 "mgoparser.mly"
                               ( Binop(Or, e1, e2) )
-# 856 "mgoparser.ml"
+# 857 "mgoparser.ml"
      : (Mgoast.expr_desc))
 
 let _menhir_action_33 =
   fun e rest ->
     (
-# 252 "mgoparser.mly"
+# 254 "mgoparser.mly"
                                            ( e :: rest )
-# 864 "mgoparser.ml"
+# 865 "mgoparser.ml"
      : (Mgoast.expr list))
 
 let _menhir_action_34 =
   fun () ->
     (
-# 257 "mgoparser.mly"
+# 259 "mgoparser.mly"
                                             ( [] )
-# 872 "mgoparser.ml"
+# 873 "mgoparser.ml"
      : (Mgoast.expr list))
 
 let _menhir_action_35 =
   fun es ->
     (
-# 258 "mgoparser.mly"
+# 260 "mgoparser.mly"
                                             ( es )
-# 880 "mgoparser.ml"
+# 881 "mgoparser.ml"
      : (Mgoast.expr list))
 
 let _menhir_action_36 =
   fun rest ->
     (
-# 262 "mgoparser.mly"
+# 264 "mgoparser.mly"
                                             ( rest )
-# 888 "mgoparser.ml"
+# 889 "mgoparser.ml"
      : (Mgoast.expr list))
 
 let _menhir_action_37 =
   fun () ->
     (
-# 263 "mgoparser.mly"
+# 265 "mgoparser.mly"
                                             ( [] )
-# 896 "mgoparser.ml"
+# 897 "mgoparser.ml"
      : (Mgoast.expr list))
 
 let _menhir_action_38 =
   fun () ->
     (
-# 264 "mgoparser.mly"
+# 266 "mgoparser.mly"
                                             ( [] )
-# 904 "mgoparser.ml"
+# 905 "mgoparser.ml"
      : (Mgoast.expr list))
 
 let _menhir_action_39 =
   fun () ->
     (
-# 80 "mgoparser.mly"
+# 79 "mgoparser.mly"
                                             ( [] )
-# 912 "mgoparser.ml"
+# 913 "mgoparser.ml"
      : ((Mgoast.ident * Mgoast.typ) list list))
 
 let _menhir_action_40 =
   fun rest vs ->
     (
-# 81 "mgoparser.mly"
+# 80 "mgoparser.mly"
                                             ( vs :: rest )
-# 920 "mgoparser.ml"
+# 921 "mgoparser.ml"
      : ((Mgoast.ident * Mgoast.typ) list list))
 
 let _menhir_action_41 =
   fun rest ->
     (
-# 85 "mgoparser.mly"
+# 84 "mgoparser.mly"
                                             ( rest )
-# 928 "mgoparser.ml"
+# 929 "mgoparser.ml"
      : ((Mgoast.ident * Mgoast.typ) list list))
 
 let _menhir_action_42 =
   fun () ->
     (
-# 86 "mgoparser.mly"
+# 85 "mgoparser.mly"
                                             ( [] )
-# 936 "mgoparser.ml"
+# 937 "mgoparser.ml"
      : ((Mgoast.ident * Mgoast.typ) list list))
 
 let _menhir_action_43 =
@@ -940,33 +941,33 @@ let _menhir_action_43 =
     let _endpos = _endpos_id_ in
     let _startpos = _startpos_id_ in
     (
-# 60 "mgoparser.mly"
+# 59 "mgoparser.mly"
              ( { loc = _startpos, _endpos; id = id } )
-# 946 "mgoparser.ml"
+# 947 "mgoparser.ml"
      : (Mgoast.ident))
 
 let _menhir_action_44 =
   fun x ->
     (
-# 94 "mgoparser.mly"
+# 93 "mgoparser.mly"
                               ( [x] )
-# 954 "mgoparser.ml"
+# 955 "mgoparser.ml"
      : (Mgoast.ident list))
 
 let _menhir_action_45 =
   fun x xs ->
     (
-# 95 "mgoparser.mly"
+# 94 "mgoparser.mly"
                               ( x :: xs )
-# 962 "mgoparser.ml"
+# 963 "mgoparser.ml"
      : (Mgoast.ident list))
 
 let _menhir_action_46 =
   fun s ->
     (
-# 170 "mgoparser.mly"
+# 169 "mgoparser.mly"
                                       ( s )
-# 970 "mgoparser.ml"
+# 971 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_47 =
@@ -974,17 +975,17 @@ let _menhir_action_47 =
     let _endpos = _endpos_b_ in
     let _startpos = _startpos_b_ in
     (
-# 171 "mgoparser.mly"
+# 170 "mgoparser.mly"
                                       ( mk_i (_startpos, _endpos) (Block b) )
-# 980 "mgoparser.ml"
+# 981 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_48 =
   fun i ->
     (
-# 172 "mgoparser.mly"
+# 171 "mgoparser.mly"
                                       ( i )
-# 988 "mgoparser.ml"
+# 989 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_49 =
@@ -992,7 +993,7 @@ let _menhir_action_49 =
     let _endpos = _endpos_init_ in
     let _startpos = _startpos__1_ in
     (
-# 174 "mgoparser.mly"
+# 173 "mgoparser.mly"
     (
       let loc = (_startpos, _endpos) in
       let init_seq =
@@ -1005,7 +1006,7 @@ let _menhir_action_49 =
       in
       mk_i loc (Vars (ids, typ, init_seq))
     )
-# 1009 "mgoparser.ml"
+# 1010 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_50 =
@@ -1013,9 +1014,9 @@ let _menhir_action_50 =
     let _endpos = _endpos_es_ in
     let _startpos = _startpos__1_ in
     (
-# 187 "mgoparser.mly"
+# 186 "mgoparser.mly"
     ( mk_i (_startpos, _endpos) (Return es) )
-# 1019 "mgoparser.ml"
+# 1020 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_51 =
@@ -1023,12 +1024,12 @@ let _menhir_action_51 =
     let _endpos = _endpos_b_ in
     let _startpos = _startpos__1_ in
     (
-# 189 "mgoparser.mly"
+# 188 "mgoparser.mly"
     (
       let loc = (_startpos, _endpos) in
       mk_i loc (For (mk_bool loc true, b))
     )
-# 1032 "mgoparser.ml"
+# 1033 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_52 =
@@ -1036,9 +1037,9 @@ let _menhir_action_52 =
     let _endpos = _endpos_b_ in
     let _startpos = _startpos__1_ in
     (
-# 194 "mgoparser.mly"
+# 193 "mgoparser.mly"
     ( mk_i (_startpos, _endpos) (For (cond, b)) )
-# 1042 "mgoparser.ml"
+# 1043 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_53 =
@@ -1046,7 +1047,7 @@ let _menhir_action_53 =
     let _endpos = _endpos_body_ in
     let _startpos = _startpos__1_ in
     (
-# 196 "mgoparser.mly"
+# 195 "mgoparser.mly"
     (
       let loc = (_startpos, _endpos) in
       let loop_body =
@@ -1062,7 +1063,7 @@ let _menhir_action_53 =
       in
       mk_i loc (Block (prefix @ [loop_instr]))
     )
-# 1066 "mgoparser.ml"
+# 1067 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_54 =
@@ -1070,9 +1071,9 @@ let _menhir_action_54 =
     let _endpos = _endpos_th_ in
     let _startpos = _startpos__1_ in
     (
-# 220 "mgoparser.mly"
+# 219 "mgoparser.mly"
     ( mk_i (_startpos, _endpos) (If (cond, th, [])) )
-# 1076 "mgoparser.ml"
+# 1077 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_55 =
@@ -1080,9 +1081,9 @@ let _menhir_action_55 =
     let _endpos = _endpos_el_ in
     let _startpos = _startpos__1_ in
     (
-# 222 "mgoparser.mly"
+# 221 "mgoparser.mly"
     ( mk_i (_startpos, _endpos) (If (cond, th, el)) )
-# 1086 "mgoparser.ml"
+# 1087 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_56 =
@@ -1090,9 +1091,9 @@ let _menhir_action_56 =
     let _endpos = _endpos_alt_ in
     let _startpos = _startpos__1_ in
     (
-# 224 "mgoparser.mly"
+# 223 "mgoparser.mly"
     ( mk_i (_startpos, _endpos) (If (cond, th, [alt])) )
-# 1096 "mgoparser.ml"
+# 1097 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_57 =
@@ -1100,9 +1101,9 @@ let _menhir_action_57 =
     let _endpos = _endpos_e_ in
     let _startpos = _startpos_e_ in
     (
-# 235 "mgoparser.mly"
+# 234 "mgoparser.mly"
     ( mk_i (_startpos, _endpos) (Expr e) )
-# 1106 "mgoparser.ml"
+# 1107 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_58 =
@@ -1110,9 +1111,9 @@ let _menhir_action_58 =
     let _endpos = _endpos__2_ in
     let _startpos = _startpos_e_ in
     (
-# 237 "mgoparser.mly"
+# 236 "mgoparser.mly"
     ( mk_i (_startpos, _endpos) (Inc e) )
-# 1116 "mgoparser.ml"
+# 1117 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_59 =
@@ -1120,9 +1121,9 @@ let _menhir_action_59 =
     let _endpos = _endpos__2_ in
     let _startpos = _startpos_e_ in
     (
-# 239 "mgoparser.mly"
+# 238 "mgoparser.mly"
     ( mk_i (_startpos, _endpos) (Dec e) )
-# 1126 "mgoparser.ml"
+# 1127 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_60 =
@@ -1130,9 +1131,9 @@ let _menhir_action_60 =
     let _endpos = _endpos_rhs_ in
     let _startpos = _startpos_lhs_ in
     (
-# 241 "mgoparser.mly"
+# 240 "mgoparser.mly"
     ( mk_i (_startpos, _endpos) (Set (lhs, rhs)) )
-# 1136 "mgoparser.ml"
+# 1137 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_61 =
@@ -1140,29 +1141,32 @@ let _menhir_action_61 =
     let _endpos = _endpos_rhs_ in
     let _startpos = _startpos_lhs_ in
     (
-# 243 "mgoparser.mly"
+# 242 "mgoparser.mly"
     (
       let ids = only_vars lhs in
       let lhs_exprs = List.map mk_var ids in
-      mk_i (_startpos, _endpos) (Set (lhs_exprs, rhs))
+      let loc = (_startpos, _endpos) in
+      (* Vars(ids, None, [assign]) *)
+      let assign = mk_i loc (Set(lhs_exprs, rhs)) in
+      mk_i loc (Vars(ids, None, [assign]))
     )
-# 1150 "mgoparser.ml"
+# 1154 "mgoparser.ml"
      : (Mgoast.instr))
 
 let _menhir_action_62 =
   fun () ->
     (
-# 109 "mgoparser.mly"
+# 108 "mgoparser.mly"
                                   ( None )
-# 1158 "mgoparser.ml"
+# 1162 "mgoparser.ml"
      : (Mgoast.instr option))
 
 let _menhir_action_63 =
   fun i ->
     (
-# 110 "mgoparser.mly"
+# 109 "mgoparser.mly"
                                   ( Some i )
-# 1166 "mgoparser.ml"
+# 1170 "mgoparser.ml"
      : (Mgoast.instr option))
 
 let _menhir_action_64 =
@@ -1170,7 +1174,7 @@ let _menhir_action_64 =
     (
 # 216 "<standard.mly>"
     ( [] )
-# 1174 "mgoparser.ml"
+# 1178 "mgoparser.ml"
      : (Mgoast.decl list))
 
 let _menhir_action_65 =
@@ -1178,231 +1182,231 @@ let _menhir_action_65 =
     (
 # 219 "<standard.mly>"
     ( x :: xs )
-# 1182 "mgoparser.ml"
+# 1186 "mgoparser.ml"
      : (Mgoast.decl list))
 
 let _menhir_action_66 =
   fun () ->
     (
-# 73 "mgoparser.mly"
+# 72 "mgoparser.mly"
             ( TInt )
-# 1190 "mgoparser.ml"
+# 1194 "mgoparser.ml"
      : (Mgoast.typ))
 
 let _menhir_action_67 =
   fun () ->
     (
-# 74 "mgoparser.mly"
+# 73 "mgoparser.mly"
                ( TBool )
-# 1198 "mgoparser.ml"
+# 1202 "mgoparser.ml"
      : (Mgoast.typ))
 
 let _menhir_action_68 =
   fun () ->
     (
-# 75 "mgoparser.mly"
+# 74 "mgoparser.mly"
                ( TString )
-# 1206 "mgoparser.ml"
+# 1210 "mgoparser.ml"
      : (Mgoast.typ))
 
 let _menhir_action_69 =
   fun s ->
     (
-# 76 "mgoparser.mly"
+# 75 "mgoparser.mly"
                  ( TStruct(s) )
-# 1214 "mgoparser.ml"
+# 1218 "mgoparser.ml"
      : (Mgoast.typ))
 
 let _menhir_action_70 =
   fun rest vs ->
     (
-# 119 "mgoparser.mly"
+# 118 "mgoparser.mly"
                                             ( vs @ rest )
-# 1222 "mgoparser.ml"
+# 1226 "mgoparser.ml"
      : ((Mgoast.ident * Mgoast.typ) list))
 
 let _menhir_action_71 =
   fun rest ->
     (
-# 123 "mgoparser.mly"
+# 122 "mgoparser.mly"
                                             ( rest )
-# 1230 "mgoparser.ml"
+# 1234 "mgoparser.ml"
      : ((Mgoast.ident * Mgoast.typ) list))
 
 let _menhir_action_72 =
   fun () ->
     (
-# 124 "mgoparser.mly"
+# 123 "mgoparser.mly"
                                             ( [] )
-# 1238 "mgoparser.ml"
+# 1242 "mgoparser.ml"
      : ((Mgoast.ident * Mgoast.typ) list))
 
 let _menhir_action_73 =
   fun () ->
     (
-# 125 "mgoparser.mly"
+# 124 "mgoparser.mly"
                                             ( [] )
-# 1246 "mgoparser.ml"
+# 1250 "mgoparser.ml"
      : ((Mgoast.ident * Mgoast.typ) list))
 
 let _menhir_action_74 =
   fun () ->
     (
-# 114 "mgoparser.mly"
+# 113 "mgoparser.mly"
                                             ( [] )
-# 1254 "mgoparser.ml"
+# 1258 "mgoparser.ml"
      : ((Mgoast.ident * Mgoast.typ) list))
 
 let _menhir_action_75 =
   fun lst ->
     (
-# 115 "mgoparser.mly"
+# 114 "mgoparser.mly"
                                             ( lst )
-# 1262 "mgoparser.ml"
+# 1266 "mgoparser.ml"
      : ((Mgoast.ident * Mgoast.typ) list))
 
 let _menhir_action_76 =
   fun decls main ->
     (
-# 53 "mgoparser.mly"
+# 52 "mgoparser.mly"
     ( if main="main" then (false, decls) else raise Error)
-# 1270 "mgoparser.ml"
+# 1274 "mgoparser.ml"
      : (Mgoast.program))
 
 let _menhir_action_77 =
   fun decls fmt main ->
     (
-# 55 "mgoparser.mly"
+# 54 "mgoparser.mly"
     ( if main="main" && fmt = "fmt" then (true, decls) else raise Error)
-# 1278 "mgoparser.ml"
+# 1282 "mgoparser.ml"
      : (Mgoast.program))
 
 let _menhir_action_78 =
   fun rest t ->
     (
-# 136 "mgoparser.mly"
+# 135 "mgoparser.mly"
                                             ( t :: rest )
-# 1286 "mgoparser.ml"
+# 1290 "mgoparser.ml"
      : (Mgoast.typ list))
 
 let _menhir_action_79 =
   fun rest ->
     (
-# 140 "mgoparser.mly"
+# 139 "mgoparser.mly"
                                             ( rest )
-# 1294 "mgoparser.ml"
+# 1298 "mgoparser.ml"
      : (Mgoast.typ list))
 
 let _menhir_action_80 =
   fun () ->
     (
-# 141 "mgoparser.mly"
+# 140 "mgoparser.mly"
                                             ( [] )
-# 1302 "mgoparser.ml"
+# 1306 "mgoparser.ml"
      : (Mgoast.typ list))
 
 let _menhir_action_81 =
   fun () ->
     (
-# 142 "mgoparser.mly"
+# 141 "mgoparser.mly"
                                             ( [] )
-# 1310 "mgoparser.ml"
+# 1314 "mgoparser.ml"
      : (Mgoast.typ list))
 
 let _menhir_action_82 =
   fun () ->
     (
-# 130 "mgoparser.mly"
+# 129 "mgoparser.mly"
                                             ( [] )
-# 1318 "mgoparser.ml"
+# 1322 "mgoparser.ml"
      : (Mgoast.typ list))
 
 let _menhir_action_83 =
   fun t ->
     (
-# 131 "mgoparser.mly"
+# 130 "mgoparser.mly"
                                             ( [t] )
-# 1326 "mgoparser.ml"
+# 1330 "mgoparser.ml"
      : (Mgoast.typ list))
 
 let _menhir_action_84 =
   fun ts ->
     (
-# 132 "mgoparser.mly"
+# 131 "mgoparser.mly"
                                             ( ts )
-# 1334 "mgoparser.ml"
+# 1338 "mgoparser.ml"
      : (Mgoast.typ list))
 
 let _menhir_action_85 =
   fun () ->
     (
-# 150 "mgoparser.mly"
+# 149 "mgoparser.mly"
                                             ( [] )
-# 1342 "mgoparser.ml"
+# 1346 "mgoparser.ml"
      : (Mgoast.seq))
 
 let _menhir_action_86 =
   fun i rest ->
     (
-# 151 "mgoparser.mly"
+# 150 "mgoparser.mly"
                                             ( i :: rest )
-# 1350 "mgoparser.ml"
+# 1354 "mgoparser.ml"
      : (Mgoast.seq))
 
 let _menhir_action_87 =
   fun rest ->
     (
-# 155 "mgoparser.mly"
+# 154 "mgoparser.mly"
                                             ( rest )
-# 1358 "mgoparser.ml"
+# 1362 "mgoparser.ml"
      : (Mgoast.seq))
 
 let _menhir_action_88 =
   fun () ->
     (
-# 156 "mgoparser.mly"
+# 155 "mgoparser.mly"
                                             ( [] )
-# 1366 "mgoparser.ml"
+# 1370 "mgoparser.ml"
      : (Mgoast.seq))
 
 let _menhir_action_89 =
   fun () ->
     (
-# 104 "mgoparser.mly"
+# 103 "mgoparser.mly"
                                   ( None )
-# 1374 "mgoparser.ml"
+# 1378 "mgoparser.ml"
      : (Mgoast.expr list option))
 
 let _menhir_action_90 =
   fun rhs ->
     (
-# 105 "mgoparser.mly"
+# 104 "mgoparser.mly"
                                   ( Some rhs )
-# 1382 "mgoparser.ml"
+# 1386 "mgoparser.ml"
      : (Mgoast.expr list option))
 
 let _menhir_action_91 =
   fun () ->
     (
-# 99 "mgoparser.mly"
+# 98 "mgoparser.mly"
                                   ( None )
-# 1390 "mgoparser.ml"
+# 1394 "mgoparser.ml"
      : (Mgoast.typ option))
 
 let _menhir_action_92 =
   fun t ->
     (
-# 100 "mgoparser.mly"
+# 99 "mgoparser.mly"
                                  ( Some t )
-# 1398 "mgoparser.ml"
+# 1402 "mgoparser.ml"
      : (Mgoast.typ option))
 
 let _menhir_action_93 =
   fun ids t ->
     (
-# 90 "mgoparser.mly"
+# 89 "mgoparser.mly"
                                          ( List.map (fun x -> (x, t)) ids )
-# 1406 "mgoparser.ml"
+# 1410 "mgoparser.ml"
      : ((Mgoast.ident * Mgoast.typ) list))
 
 let _menhir_print_token : token -> string =

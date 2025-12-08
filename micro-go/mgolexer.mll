@@ -70,6 +70,14 @@ rule token = parse
   | '"' ([^ '"' '\n'])* '"' as s {
     mark (STRING(String.sub s 1 (String.length s - 2)))
 }
+  (* chaîne non terminée : on voit un " puis pas de " avant un retour ligne *)
+  | '"' ([^ '"' '\n'])* '\n' {
+      raise (Error "unterminated string literal")
+  }
+
+  | '"' ([^ '"' '\n'])* eof {
+      raise (Error "unterminated string literal")
+  }
   | number as n  { try mark (INT(Int64.of_string n)) 
                    with _ -> raise (Error "literal constant too large") }
   | ident as id  { mark (keyword_or_ident id) }
@@ -110,3 +118,5 @@ and comment = parse
   | "*/" { () }
   | _    { comment lexbuf }
   | eof  { raise (Error "unterminated comment") }
+
+
