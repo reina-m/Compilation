@@ -1,4 +1,4 @@
-```markdown
+
 # MicroGo Compiler
 
 ## Overview
@@ -118,4 +118,3 @@ Error tests include:
 ## Conclusion
 
 This project implements a complete compilation chain for MicroGo, from source code analysis to MIPS code generation. It demonstrates the connection between grammar, AST construction, static typing, runtime representation, stack management and low-level code generation.
-```
